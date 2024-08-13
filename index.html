@@ -1,1 +1,45 @@
-*^rgkd*s
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Choisissez vos composants</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1>Choisissez vos composants :</h1>
+    <form id="form-composants">
+        <select name="cpu" id="cpu">
+            <option value="">Sélectionnez un processeur ...</option>
+            <option value="intel-core-i5">Intel Core i5</option>
+            <option value="amd-ryzen-7">AMD Ryzen 7</option>
+            <option value="intel-core-i9">Intel Core i9</option>
+        </select>
+
+        <select name="gpu" id="gpu">
+            <option value="">Sélectionnez une carte graphique...</option>
+            <option value="nvidia-gtx-1660-ti">NVIDIA GeForce GTX 1660 Ti</option>
+            <option value="amd-rx-5600-xt">AMD Radeon RX 5600 XT</option>
+            <option value="intel-iris-xe">Intel Iris Xe Graphics</option>
+        </select>
+
+        <select name="ram" id="ram">
+            <option value="">Sélectionnez une quantité de RAM...</option>
+            <option value="8go">8 Go</option>
+            <option value="16go">16 Go</option>
+            <option value="32go">32 Go</option>
+        </select>
+
+        <select name="disque-dur" id="disque-dur">
+            <option value="">Sélectionnez un disque dur...</option>
+            <option value="1to-ssd">1 To SSD</option>
+            <option value="2to-hdd">2 To HDD</option>
+            <option value="4to-nvme">4 To NVMe</option>
+        </select>
+
+        <button type="button" id="submit-btn">Valider mes choix</button>
+    </form>
+    <div id="resultat"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
