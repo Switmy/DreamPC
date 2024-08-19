@@ -1,0 +1,2 @@
+-- SQLite
+IF(EXISTS (SELECT * from composants)) SELECT 1 

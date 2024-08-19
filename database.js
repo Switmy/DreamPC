@@ -11,6 +11,7 @@ function createDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             type TEXT NOT NULL,
             value TEXT NOT NULL,
+            name TEXT NOT NULL,
             image TEXT NOT NULL
         )`);
 
@@ -31,10 +32,10 @@ function createDatabase() {
         ];
 
         // Prépare l'insertion des composants
-        const stmt = db.prepare(`INSERT INTO composants (type, value, image) VALUES (?, ?, ?)`);
+        const stmt = db.prepare(`INSERT INTO composants (type, value, name, image) VALUES (?, ?, ?, ?)`);
 
         composants.forEach(composants => {
-            stmt.run(composants.type, composants.value, composants.image);
+            stmt.run(composants.type, composants.value, composants.name, composants.image);
         });
 
         stmt.finalize();
