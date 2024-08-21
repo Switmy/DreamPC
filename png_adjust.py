@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 import os
+import argparse
 
 def center_and_fill_image(image, frame_size):
-    """ Center and fill a PNG image within a rectangular frame. """
+    """Center and fill a PNG image within a rectangular frame."""
     frame_width, frame_height = frame_size
 
     # Get the alpha channel if it exists
@@ -54,36 +55,47 @@ def center_and_fill_image(image, frame_size):
 
     return new_image
 
-def main():
-    frame_size = (300, 300)  # Desired dimensions for all images
-    background_path = "matx_motherboard.png"
-    overlay_paths = [
-        "air_cooler.png",
-        "water_cooler.png",
-        "ram1.png",
-        "ram2.png",
-        "ram3.png",
-        "ram4.png"
-    ]
-
-    # Load and process the background image
-    background = cv2.imread(background_path, cv2.IMREAD_UNCHANGED)
-    if background is not None:
-        background = center_and_fill_image(background, frame_size)
-        cv2.imwrite(background_path, background)
-        print(f"Centered background image saved as {background_path}.")
+def process_image(img_path, frame_size, output_dir):
+    """Load, process, and save the centered and filled image."""
+    img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+    if img is not None:
+        img = center_and_fill_image(img, frame_size)
+        output_path = os.path.join(output_dir, os.path.basename(img_path))
+        cv2.imwrite(output_path, img)
+        print(f"Centered background image saved as {output_path}.")
     else:
-        print(f"Error: {background_path} not found.")
+        print(f"Error: {img_path} not found.")
 
-    # Process each overlay
-    for overlay_path in overlay_paths:
-        overlay = cv2.imread(overlay_path, cv2.IMREAD_UNCHANGED)
-        if overlay is not None:
-            processed_overlay = center_and_fill_image(overlay, frame_size)
-            cv2.imwrite(overlay_path, processed_overlay)
-            print(f"Centered overlay saved as {overlay_path}.")
-        else:
-            print(f"Error: {overlay_path} not found.")
+def main():
+    parser = argparse.ArgumentParser(description="Center and fill PNG images within a rectangular frame.")
+    parser.add_argument("frame_size", type=int, nargs=2, help="Frame size as two integers: width height.")
+    parser.add_argument("img_path", type=str, help="Path to a PNG image or a folder containing PNG images.")
+
+    args = parser.parse_args()
+    frame_size = tuple(args.frame_size)
+    img_path = args.img_path
+
+    # Determine the output directory
+    if os.path.isfile(img_path):
+        output_dir = os.path.join(os.path.dirname(img_path), "ADJUSTED_IMG")
+    elif os.path.isdir(img_path):
+        output_dir = os.path.join(img_path, "ADJUSTED_IMG")
+    else:
+        print("Error: img_path must be a .png file or a directory containing .png files.")
+        return
+
+    # Create the output directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if os.path.isfile(img_path) and img_path.lower().endswith('.png'):
+        process_image(img_path, frame_size, output_dir)
+    elif os.path.isdir(img_path):
+        for filename in os.listdir(img_path):
+            if filename.lower().endswith('.png'):
+                process_image(os.path.join(img_path, filename), frame_size, output_dir)
+    else:
+        print("Error: img_path must be a .png file or a directory containing .png files.")
 
 if __name__ == '__main__':
     main()
