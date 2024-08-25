@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PNG ADJUST</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='png_adjust.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>PNG ADJUST</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/png"><br><br>
+            <input type="file" name="folder" webkitdirectory mozdirectory><br><br>
+            <input type="text" name="new_name" placeholder="New name (optional)">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+</body>
+</html>

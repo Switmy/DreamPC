@@ -1,19 +1,21 @@
+import os
 import cv2
 import numpy as np
-import os
-import argparse
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, flash
+
+app = Flask(__name__, template_folder='.')
+app.config['UPLOAD_FOLDER'] = 'images/'  # Directory for processed images
+app.config['BASE_IMAGES_FOLDER'] = 'base_images/'  # Directory for unprocessed images
+app.secret_key = 'supersecretkey'
 
 def center_and_fill_image(image, frame_size):
-    """Center and fill a PNG image within a rectangular frame."""
     frame_width, frame_height = frame_size
 
-    # Get the alpha channel if it exists
     if image.shape[2] == 4:
         alpha_channel = image[:, :, 3]
     else:
         alpha_channel = None
 
-    # Find the bounding box of the non-transparent part
     if alpha_channel is not None:
         coords = cv2.findNonZero(alpha_channel)
         x, y, w, h = cv2.boundingRect(coords)
@@ -25,7 +27,6 @@ def center_and_fill_image(image, frame_size):
     aspect_ratio_image = orig_width / orig_height
     aspect_ratio_frame = frame_width / frame_height
 
-    # Calculate new dimensions for the image to fit within the frame
     if aspect_ratio_image > aspect_ratio_frame:
         new_width = frame_width
         new_height = int(frame_width / aspect_ratio_image)
@@ -33,69 +34,93 @@ def center_and_fill_image(image, frame_size):
         new_height = frame_height
         new_width = int(frame_height * aspect_ratio_image)
 
-    # Resize the image to fit within the frame while maintaining aspect ratio
     resized_image = cv2.resize(image_cropped, (new_width, new_height), interpolation=cv2.INTER_AREA)
 
-    # Create a new image with the frame size and a transparent (or white) background
     if image.shape[2] == 4:
-        # PNG with alpha channel
         new_image = np.zeros((frame_height, frame_width, 4), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255, 0)  # Transparent background
+        new_image[:, :] = (255, 255, 255, 0)
     else:
-        # PNG without alpha channel
         new_image = np.zeros((frame_height, frame_width, 3), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255)  # White background
+        new_image[:, :] = (255, 255, 255)
 
-    # Compute the position where the resized image will be placed
     x_offset = (frame_width - new_width) // 2
     y_offset = (frame_height - new_height) // 2
 
-    # Place the resized image in the center of the new image
     new_image[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = resized_image
 
     return new_image
 
-def process_image(img_path, frame_size, output_dir):
-    """Load, process, and save the centered and filled image."""
-    img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+def process_image(file, new_name, output_dir):
+    # Save the uploaded file to the base_images folder
+    base_image_path = os.path.join(app.config['BASE_IMAGES_FOLDER'], file.filename)
+    file.save(base_image_path)  # Save file to base_images folder
+
+    # Read the image from the base_images folder
+    img = cv2.imread(base_image_path, cv2.IMREAD_UNCHANGED)
     if img is not None:
-        img = center_and_fill_image(img, frame_size)
-        output_path = os.path.join(output_dir, os.path.basename(img_path))
-        cv2.imwrite(output_path, img)
-        print(f"Centered background image saved as {output_path}.")
+        img_processed = center_and_fill_image(img, (800, 800))
+        # Determine output filename and path
+        if new_name:
+            output_filename = f"{new_name}.png"
+        else:
+            output_filename = file.filename
+        output_path = os.path.join(output_dir, output_filename)
+        
+        # Save the processed image to the output directory
+        cv2.imwrite(output_path, img_processed)
+        
+        # Remove the original image from base_images folder
+        try:
+            os.remove(base_image_path)  # Remove the original file
+        except PermissionError as e:
+            flash(f"PermissionError: Unable to delete {base_image_path}. Please ensure the file is not open.")
+            print(e)
+            
+        print(f"Saving file to: {base_image_path}")
+        print(f"Processing file: {base_image_path}")
+        print(f"Saving processed file to: {output_path}")
+
+        return output_filename
     else:
-        print(f"Error: {img_path} not found.")
+        flash(f"Error: {base_image_path} could not be processed.")
+        return None
 
-def main():
-    parser = argparse.ArgumentParser(description="Center and fill PNG images within a rectangular frame.")
-    parser.add_argument("frame_size", type=int, nargs=2, help="Frame size as two integers: width height.")
-    parser.add_argument("img_path", type=str, help="Path to a PNG image or a folder containing PNG images.")
+@app.route('/', methods=['GET', 'POST'])
+def upload_image():
+    if request.method == 'POST':
+        output_dir = app.config['UPLOAD_FOLDER']
+        
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    args = parser.parse_args()
-    frame_size = tuple(args.frame_size)
-    img_path = args.img_path
+        if 'image' in request.files and request.files['image'].filename != '':
+            file = request.files['image']
+            new_name = request.form.get('new_name')
+            processed_filename = process_image(file, new_name, output_dir)
+            if processed_filename:
+                flash(f"Image {processed_filename} successfully processed and saved!")
+                return redirect(url_for('download_image', filename=processed_filename))
+        
+        elif 'folder' in request.files and request.files.getlist('folder'):
+            new_name = request.form.get('new_name')
+            files = request.files.getlist('folder')
 
-    # Determine the output directory
-    if os.path.isfile(img_path):
-        output_dir = os.path.join(os.path.dirname(img_path), "ADJUSTED_IMG")
-    elif os.path.isdir(img_path):
-        output_dir = os.path.join(img_path, "ADJUSTED_IMG")
-    else:
-        print("Error: img_path must be a .png file or a directory containing .png files.")
-        return
+            for file in files:
+                if file.filename.lower().endswith('.png'):
+                    processed_filename = process_image(file, new_name, output_dir)
+            
+            flash(f"All images successfully processed and saved in the {output_dir} folder!")
+            return redirect(request.url)
 
-    # Create the output directory if it doesn't exist
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+        else:
+            flash("No image or folder selected.")
+            return redirect(request.url)
 
-    if os.path.isfile(img_path) and img_path.lower().endswith('.png'):
-        process_image(img_path, frame_size, output_dir)
-    elif os.path.isdir(img_path):
-        for filename in os.listdir(img_path):
-            if filename.lower().endswith('.png'):
-                process_image(os.path.join(img_path, filename), frame_size, output_dir)
-    else:
-        print("Error: img_path must be a .png file or a directory containing .png files.")
+    return render_template('png_adjust.html')
+
+@app.route('/download/<filename>')
+def download_image(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=True)
