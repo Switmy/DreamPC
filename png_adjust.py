@@ -5,7 +5,6 @@ from flask import Flask, render_template, request, redirect, url_for, send_from_
 
 app = Flask(__name__, template_folder='.')
 app.config['UPLOAD_FOLDER'] = 'images/'  # Directory for processed images
-app.config['BASE_IMAGES_FOLDER'] = 'base_images/'  # Directory for unprocessed images
 app.secret_key = 'supersecretkey'
 
 def center_and_fill_image(image, frame_size):
@@ -51,38 +50,29 @@ def center_and_fill_image(image, frame_size):
     return new_image
 
 def process_image(file, new_name, output_dir):
-    # Save the uploaded file to the base_images folder
-    base_image_path = os.path.join(app.config['BASE_IMAGES_FOLDER'], file.filename)
-    file.save(base_image_path)  # Save file to base_images folder
+    # Save the uploaded file temporarily in memory
+    img_array = np.frombuffer(file.read(), np.uint8)
+    img = cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
 
-    # Read the image from the base_images folder
-    img = cv2.imread(base_image_path, cv2.IMREAD_UNCHANGED)
     if img is not None:
         img_processed = center_and_fill_image(img, (800, 800))
+        
         # Determine output filename and path
         if new_name:
             output_filename = f"{new_name}.png"
         else:
             output_filename = file.filename
+
         output_path = os.path.join(output_dir, output_filename)
         
         # Save the processed image to the output directory
         cv2.imwrite(output_path, img_processed)
         
-        # Remove the original image from base_images folder
-        try:
-            os.remove(base_image_path)  # Remove the original file
-        except PermissionError as e:
-            flash(f"PermissionError: Unable to delete {base_image_path}. Please ensure the file is not open.")
-            print(e)
-            
-        print(f"Saving file to: {base_image_path}")
-        print(f"Processing file: {base_image_path}")
-        print(f"Saving processed file to: {output_path}")
+        print(f"Saved processed file to: {output_path}")
 
         return output_filename
     else:
-        flash(f"Error: {base_image_path} could not be processed.")
+        flash(f"Error: The image could not be processed.")
         return None
 
 @app.route('/', methods=['GET', 'POST'])
@@ -93,27 +83,27 @@ def upload_image():
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        if 'image' in request.files and request.files['image'].filename != '':
-            file = request.files['image']
+        # Handling multiple image uploads
+        if 'images' in request.files:
+            files = request.files.getlist('images')
             new_name = request.form.get('new_name')
-            processed_filename = process_image(file, new_name, output_dir)
-            if processed_filename:
-                flash(f"Image {processed_filename} successfully processed and saved!")
-                return redirect(url_for('download_image', filename=processed_filename))
-        
-        elif 'folder' in request.files and request.files.getlist('folder'):
-            new_name = request.form.get('new_name')
-            files = request.files.getlist('folder')
+            processed_files = []
 
             for file in files:
                 if file.filename.lower().endswith('.png'):
+                    # Process each image with its original filename or new name
                     processed_filename = process_image(file, new_name, output_dir)
+                    if processed_filename:
+                        processed_files.append(processed_filename)
             
-            flash(f"All images successfully processed and saved in the {output_dir} folder!")
+            if processed_files:
+                flash(f"All images ({len(processed_files)}) successfully processed and saved in the {output_dir} folder!")
+            else:
+                flash("No valid images were processed.")
             return redirect(request.url)
 
         else:
-            flash("No image or folder selected.")
+            flash("No images selected.")
             return redirect(request.url)
 
     return render_template('png_adjust.html')

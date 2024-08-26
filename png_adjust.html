@@ -10,11 +10,21 @@
     <div class="container">
         <h1>PNG ADJUST</h1>
         <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="image" accept="image/png"><br><br>
-            <input type="file" name="folder" webkitdirectory mozdirectory><br><br>
-            <input type="text" name="new_name" placeholder="New name (optional)">
-            <button type="submit">Upload</button>
+            <input type="text" name="new_name" id="new_name">
+            <br>
+            <input type="file" name="images" id="images" multiple>
+            <br>
+            <input type="submit" value="Upload">
         </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+            {% endwith %}
     </div>
 </body>
 </html>
