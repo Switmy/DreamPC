@@ -20,16 +20,12 @@ document.getElementById("submit-btn").addEventListener('click', function() {
 
         const resultat = `
             <h2>Votre configuration PC</h2>
-            <p>Processeur : ${cpu}</p>
             <img src="${cpuUrl}" alt="cpu" class="cpu">
             <br><hr>
-            <p>Carte graphique : ${gpu}</p>
             <img src="${gpuUrl}" alt="gpu">
             <br><hr>
-            <p>RAM : ${ram}</p>
             <img src="${ramUrl}" alt="RAM">
             <br><hr>
-            <p>Disque dur : ${disqueDur}</p>
             <img src="${disqueDurUrl}" alt="Disque dur">
         `;
         
