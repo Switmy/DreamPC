@@ -50,3 +50,4 @@ document.getElementById("submit-btn").addEventListener('click', function() {
     })
     .catch(error => console.error('Erreur lors de la récupération des images:', error));
 });
+    
