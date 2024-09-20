@@ -1,7 +1,9 @@
 document.getElementById("submit-btn").addEventListener('click', function() { 
     const gpu = document.querySelector('#gpu > option:checked').value.toLowerCase().replace(/ /g, '-');
+    const cooler = document.querySelector('#cooler > option:checked').value.toLowerCase().replace(/ /g, '-');
     const ram = document.querySelector('#ram > option:checked').value.toLowerCase().replace(/ /g, '-');
     const motherboard = document.querySelector('#motherboard > option:checked').value.toLowerCase().replace(/ /g, '-');
+    const fans = document.querySelector('#fans > option:checked').value.toLowerCase().replace(/ /g, '-');
 
     // Fetch the components as images and motherboard as a type
     Promise.all([
@@ -16,6 +18,7 @@ document.getElementById("submit-btn").addEventListener('click', function() {
         const ctx = canvas.getContext('2d');
         
         const gpuImage = new Image();
+        const coolerImage = new Image();
         const ramImage = new Image();
         const motherboardImage = new Image
 
@@ -31,18 +34,14 @@ document.getElementById("submit-btn").addEventListener('click', function() {
         // Once all images are loaded, draw them on the canvas
         Promise.all([
             new Promise((resolve) => { gpuImage.onload = resolve; gpuImage.src = URL.createObjectURL(gpuBlob); }),
+            new Promise((resolve) => { coolerImage.onload = resolve; coolerImage.src = URL.createObjectURL(coolerBlob); }),
             new Promise((resolve) => { ramImage.onload = resolve; ramImage.src = URL.createObjectURL(ramBlob); }),
             new Promise((resolve) => { motherboardImage.onload = resolve; motherboardImage.src = URL.createObjectURL(motherboardblob); })
         ])
         .then(() => {
-
-            if (motherboardData.name.includes("atx")) {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas for new drawing
 
-            // Draw the CPU image at position (50, 50) and scale it
-            ctx.drawImage(cpuImage, 50, 50, 150, 150);
-            ctx.fillText("CPU", 50, 220);  // Label the component
-
+            if (motherboardData.name.includes("atx")) {
             // Draw the GPU image at position (250, 50)
             ctx.drawImage(gpuImage, 250, 50, 150, 150);
             ctx.fillText("GPU", 250, 220);
