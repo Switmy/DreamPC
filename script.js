@@ -4,23 +4,28 @@ document.getElementById("submit-btn").addEventListener('click', function() {
     const ram = document.querySelector('#ram > option:checked').value.toLowerCase().replace(/ /g, '-');
     const motherboard = document.querySelector('#motherboard > option:checked').value.toLowerCase().replace(/ /g, '-');
     const fans = document.querySelector('#fans > option:checked').value.toLowerCase().replace(/ /g, '-');
+    const Case = document.querySelector('#case > option:checked').value.toLowerCase().replace(/ /g, '-');
 
     // Fetch the components as images and motherboard as a type
     Promise.all([
         fetch(`http://localhost:3000/api/composants/gpu/${gpu}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/composants/ram/${cooler}`).then(res => res.blob()),
+        fetch(`http://localhost:3000/api/composants/cooler/${cooler}`).then(res => res.blob()),
         fetch(`http://localhost:3000/api/composants/ram/${ram}`).then(res => res.blob()),
         fetch(`http://localhost:3000/api/composants/motherboard/${motherboard}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/composants/motherboard/${motherboard}`).then(res => res.json())  // Fetching motherboard data as JSON
+        fetch(`http://localhost:3000/api/composants/motherboard/${motherboard}`).then(res => res.json()),  // Fetching motherboard data as JSON
+        fetch(`http://localhost:3000/api/composants/fans/${fans}`).then(res => res.blob()),
+        fetch(`http://localhost:3000/api/composants/case/${Case}`).then(res => res.blob()),
     ])
-    .then(([, gpuBlob, ramBlob, , motherboardblob, motherboardData]) => {
+    .then(([gpuBlob, coolerBlob, ramBlob, motherboardblob, motherboardData, fansBlob, CaseBlob]) => {
         const canvas = document.getElementById('configCanvas');
         const ctx = canvas.getContext('2d');
         
         const gpuImage = new Image();
         const coolerImage = new Image();
         const ramImage = new Image();
-        const motherboardImage = new Image
+        const motherboardImage = new Image();
+        const fansImage = new Image();
+        const CaseImage = new Image();
 
         // Log motherboard name
         //console.log("Motherboard Name:", motherboardData.name);  
@@ -36,7 +41,9 @@ document.getElementById("submit-btn").addEventListener('click', function() {
             new Promise((resolve) => { gpuImage.onload = resolve; gpuImage.src = URL.createObjectURL(gpuBlob); }),
             new Promise((resolve) => { coolerImage.onload = resolve; coolerImage.src = URL.createObjectURL(coolerBlob); }),
             new Promise((resolve) => { ramImage.onload = resolve; ramImage.src = URL.createObjectURL(ramBlob); }),
-            new Promise((resolve) => { motherboardImage.onload = resolve; motherboardImage.src = URL.createObjectURL(motherboardblob); })
+            new Promise((resolve) => { motherboardImage.onload = resolve; motherboardImage.src = URL.createObjectURL(motherboardblob); }),
+            new Promise((resolve) => { fansImage.onload = resolve; fansImage.src = URL.createObjectURL(fansBlob); }),
+            new Promise((resolve) => { CaseImage.onload = resolve; CaseImage.src = URL.createObjectURL(CaseBlob); })
         ])
         .then(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas for new drawing

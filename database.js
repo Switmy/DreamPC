@@ -17,19 +17,25 @@ function createDatabase() {
 
         // Insertion des données
         const composants = [
-            { type: 'cpu', value: 'intel-core-i5', name: 'Intel Core i5', image: 'intel-core-i5.png' },
-            { type: 'cpu', value: 'amd-ryzen-7', name: 'AMD Ryzen 7', image: 'amd-ryzen-7.png' },
-            { type: 'cpu', value: 'intel-core-i9', name: 'Intel Core i9', image: 'intel-core-i9.png' },
-            { type: 'gpu', value: 'nvidia-gtx-1660-ti', name: 'NVIDIA GeForce GTX 1660 Ti', image: 'nvidia-gtx-1660-ti.png' },
-            { type: 'gpu', value: 'amd-rx-5600-xt', name: 'AMD Radeon RX 5600 XT', image: 'amd-rx-5600-xt.png' },
-            { type: 'gpu', value: 'intel-iris-xe', name: 'Intel Iris Xe Graphics', image: 'intel-iris-xe.png' },
-            { type: 'ram', value: '8go', name: '8 Go', image: 'ram-8go.png' },
-            { type: 'ram', value: '16go', name: '16 Go', image: 'ram-16go.png' },
-            { type: 'ram', value: '32go', name: '32 Go', image: 'ram-32go.png' },
-            { type: 'disque-dur', value: '1to-ssd', name: '1 To SSD', image: '1to-ssd.png' },
-            { type: 'disque-dur', value: '2to-hdd', name: '2 To HDD', image: '2to-hdd.png' },
-            { type: 'disque-dur', value: '4to-nvme', name: '4 To NVMe', image: '4to-nvme.png' }
+            { type: 'case', name: 'ATX NZXT H9 Flow 2024', image: 'nzxt-h9-2024-flow.png'},
+            { type: 'case', name: 'microATX Asus Prime AP201', image: 'asusprime-AP201.png'},
+            { type: 'case', name: 'ATX NZXT H5 Flow 2023', image: 'nzxt-h5-2023-flow.png'},
+            { type: 'case', name: 'microATX Deepcool Matrexx 40', image: 'deepcool-matrexx-40-3fs.png'},
+            { type: 'case', name: 'ATX Deepcool CH560 Digital', image: 'deepcool-ch560-digital.png'},
+            { type: 'case', name: 'ATX Corsair ICUE 5000X White', image: 'corsair-icue-5000x-white.png'},
+            { type: 'case', name: 'ATX Corsair ICUE 5000X White', image: 'corsair-icue-5000x-white.png'},
+            { type: 'case', name: 'ATX Cooler-Master Masterbox NR200P White', image: 'coolermaster-masterbox-nr200p-white.png'},
+            { type: 'gpu', name: 'Gigabyte Aero 4080', image: 'gigabyte-4080-aero.png'},
+            { type: 'gpu', name: 'MSI Gaming-X Slim 4060-ti', image: 'msi-4060-ti-gaming-x-slim.png'},
+            { type: 'gpu', name: 'Asus ROG STRIX 4080', image: 'rog-4080-strix.png'},
+            { type: 'gpu', name: 'Asus TUF 4080', image: 'tuf-4080.png'},
         ];
+        //value:'corsair-icue-5000x-white',
+        //value:'deepcool-ch560-digital', 
+        //value:'deepcool-matrexx-40-3fs',
+        //value:'nzxt-h5-flow-2023',
+        //value:'asus-AP201',
+        //value:'nzxt-h9-flow-2024',
 
         // Prépare l'insertion des composants
         const stmt = db.prepare(`INSERT INTO composants (type, value, name, image) VALUES (?, ?, ?, ?)`);
