@@ -1,70 +1,77 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Choisissez vos composants</title>
+    <title>Chose your components</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <h1>Choisissez vos composants :</h1>
-    <form id="form-composants">
+    <h1>Chose your components</h1>
+    <form id="form-components">
         <select name="cpu" id="cpu">
-            <option value="">Processeur</option>
-            <option value="intel-core-i5">Intel Core i5</option>
-            <option value="amd-ryzen-7">AMD Ryzen 7</option>
-            <option value="intel-core-i9">Intel Core i9</option>
+            <option value="">CPU</option>
+            <option value="intel-core-i5-14600KF">Intel Core i5 14600KF</option>
+            <option value="amd-ryzen-7-7800X3D">AMD Ryzen 7 7800X3D</option>
+            <option value="intel-core-i9-14900KF">Intel Core i9 14900KF</option>
+            <option value="intel-core-i9-12600F">Intel Core i5 12600F</option>
         </select>
 
         <select name="gpu" id="gpu">
-            <option value="">Carte Graphique</option>
-            <option value="nvidia-gtx-1660-ti">NVIDIA GeForce GTX 1660 Ti</option>
-            <option value="amd-rx-5600-xt">AMD Radeon RX 5600 XT</option>
-            <option value="intel-iris-xe">Intel Iris Xe Graphics</option>
+            <option value="">GPU</option>
+            <option value="gigabyte-aero-4080">Gigabyte Aero 4080</option>
+            <option value="msi-gaming-x-slim-xt-4060-ti">MSI Gaming-X Slim 4060-ti</option>
+            <option value="asus-rog-strix-4080">Asus ROG STRIX 4080</option>
+            <option value="asus-tuf-4080">Asus TUF 4080</option>
         </select>
 
         <select name="ram" id="ram" multiple>
             <option value="">RAM</option>
-            <option value="8go">8 Go</option>
-            <option value="16go">16 Go</option>
-            <option value="32go">32 Go</option>
+            <option value="corsair-vengence-lpx-1x8gb-ddr4">Corsair Vengence LPX 8GB (1x8gb) DDR4</option>
+            <option value="corsair-vengence-lpx-2x8gb-ddr4">Corsair Vengence LPX 16GB (2x8gb) DDR4</option>
+            <option value="corsair-vengence-2x8gb-ddr5">Corsair Vengeance 16GB (2x8gb) DDR5</option>
+            <option value="corsair-vengence-RGB-2x16gb-ddr5">Corsair Vengeance RGB 32GB (2x16gb) DDR5</option>
+            <option value="corsair-vengence-RGB-4x16gb-ddr5">Corsair Vengeance RGB 64GB (4x16gb) DDR5</option>
         </select>
 
         <select name="storage" id="storage">
-            <option value="">Stockage</option>
-            <option value="1to-ssd">1 To SSD</option>
-            <option value="2to-hdd">2 To HDD</option>
-            <option value="4to-nvme">4 To NVMe</option>
+            <option value="">Storage</option>
+            <option value="crucial-p3-plus-1-tb-ssd">Crucial P3 Plus 1 TB SSD</option>
+            <option value="crucial-p3-plus-2-tb-ssd">Crucial P3 Plus 2 TB SSD</option>
+            <option value="samsung-990-pro-1-tb-ssd">Samsung 990 Pro 1 TB SSD</option>
+            <option value="samsung-990-pro-2-tb-ssd">Samsung 990 Pro 2 TB SSD</option>
+            <option value="seagate-barracuda-4-tb-hdd">Seagate BarraCuda 4 TB HDD</option>
+            <option value="seagate-barracuda-compute-8-tb-hdd">Seagate BarraCuda Compute 8 TB HDD</option>
         </select>
 
         <select name="motherboard" id="motherboard"></select>
-            <option value="">Carte Mère</option>
+            <option value="">Motherboard</option>
             <option value="1to-ssd">1 To SSD</option>
             <option value="2to-hdd">2 To HDD</option>
             <option value="4to-nvme">4 To NVMe</option>
         </select>
 
         <select name="case" id="case"></select>
-            <option value="">Boitier</option>
+            <option value="">Case</option>
             <option value="1to-ssd">1 To SSD</option>
             <option value="2to-hdd">2 To HDD</option>
             <option value="4to-nvme">4 To NVMe</option>
         </select>
 
         <select name="cooler" id="cooler"></select>
-            <option value="">Refroidissement Processeur</option>
+            <option value="">Cooler</option>
             <option value="1to-ssd">1 To SSD</option>
             <option value="2to-hdd">2 To HDD</option>
             <option value="4to-nvme">4 To NVMe</option>
         </select>
 
         <select name="fans" id="fans"></select>
-            <option value="">Ventilateurs</option>
+            <option value="">Fans</option>
             <option value="1to-ssd">1 To SSD</option>
             <option value="2to-hdd">2 To HDD</option>
             <option value="4to-nvme">4 To NVMe</option>
         </select>
 
-        <button type="button" id="submit-btn">Valider mes choix</button>
+        <button type="button" id="submit-btn">Let's GO</button>
     </form>
     
     <canvas id="configCanvas" width="800" height="600"></canvas>

@@ -26,7 +26,7 @@ document.getElementById("submit-btn").addEventListener('click', function() {
         const motherboardImage = new Image();
         const fansImage = new Image();
         const CaseImage = new Image();
-
+        
         // Log motherboard name
         //console.log("Motherboard Name:", motherboardData.name);  
 
@@ -48,7 +48,7 @@ document.getElementById("submit-btn").addEventListener('click', function() {
         .then(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas for new drawing
 
-            if (motherboardData.name.includes("atx")) {
+            if (motherboardData.value.includes("atx")) {
             // Draw the GPU image at position (250, 50)
             ctx.drawImage(gpuImage, 250, 50, 150, 150);
             ctx.fillText("GPU", 250, 220);

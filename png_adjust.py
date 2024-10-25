@@ -7,7 +7,13 @@ app = Flask(__name__, template_folder='.')
 app.config['UPLOAD_FOLDER'] = 'images/'  # Directory for processed images
 app.secret_key = 'supersecretkey'
 
-def center_and_fill_image(image, frame_size):
+import cv2
+import numpy as np
+
+def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost = 1.3):
+    #Set black_and_white=False to remove the black_and_white filter....
+    #And set brightness_booOOOOOOOOOst = 1.0 to remove the brightness_booOOOOOOOOOst 
+    #brightness_boost can be controlled with the 1.(...) number (higher is more boooooost)
     frame_width, frame_height = frame_size
 
     if image.shape[2] == 4:
@@ -34,6 +40,16 @@ def center_and_fill_image(image, frame_size):
         new_width = int(frame_height * aspect_ratio_image)
 
     resized_image = cv2.resize(image_cropped, (new_width, new_height), interpolation=cv2.INTER_AREA)
+
+    if black_and_white:
+        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
+        #_, resized_image = cv2.threshold(resized_image, 127, 255, cv2.THRESH_BINARY)
+        # Add a new dimension to the black and white image
+        resized_image = np.expand_dims(resized_image, axis=-1)
+
+    if brightness_boost != 1.0:
+        resized_image = cv2.addWeighted(resized_image, brightness_boost, resized_image, 0, 0)
+        resized_image = np.expand_dims(resized_image, axis=-1)
 
     if image.shape[2] == 4:
         new_image = np.zeros((frame_height, frame_width, 4), dtype=np.uint8)
