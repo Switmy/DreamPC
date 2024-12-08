@@ -2,74 +2,99 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Chose your components</title>
+    <title>Choose Your Components</title>
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <h1>Chose your components</h1>
+    <h1>Choose Your Components</h1>
     <form id="form-components">
-        <select name="cpu" id="cpu">
-            <option value="">CPU</option>
-            <option value="intel-core-i5-14600KF">Intel Core i5 14600KF</option>
-            <option value="amd-ryzen-7-7800X3D">AMD Ryzen 7 7800X3D</option>
-            <option value="intel-core-i9-14900KF">Intel Core i9 14900KF</option>
-            <option value="intel-core-i9-12600F">Intel Core i5 12600F</option>
-        </select>
+        <fieldset>
+            <legend>CPU</legend>
+            <label><input type="checkbox" name="cpu" value="intel-core-i5-14600KF"> Intel Core i5 14600KF</label><br>
+            <label><input type="checkbox" name="cpu" value="amd-ryzen-7-7800X3D"> AMD Ryzen 7 7800X3D</label><br>
+            <label><input type="checkbox" name="cpu" value="intel-core-i9-14900KF"> Intel Core i9 14900KF</label><br>
+            <label><input type="checkbox" name="cpu" value="intel-core-i9-12600F"> Intel Core i5 12600F</label><br>
+        </fieldset>
 
-        <select name="gpu" id="gpu">
-            <option value="">GPU</option>
-            <option value="gigabyte-aero-4080">Gigabyte Aero 4080</option>
-            <option value="msi-gaming-x-slim-xt-4060-ti">MSI Gaming-X Slim 4060-ti</option>
-            <option value="asus-rog-strix-4080">Asus ROG STRIX 4080</option>
-            <option value="asus-tuf-4080">Asus TUF 4080</option>
-        </select>
+        <fieldset>
+            <legend>GPU</legend>
+            <label><input type="checkbox" name="gpu" value="gigabyte-aero-4080"> Gigabyte Aero 4080</label><br>
+            <label><input type="checkbox" name="gpu" value="msi-gaming-x-slim-xt-4060-ti"> MSI Gaming-X Slim 4060-ti</label><br>
+            <label><input type="checkbox" name="gpu" value="asus-rog-strix-4080"> Asus ROG STRIX 4080</label><br>
+            <label><input type="checkbox" name="gpu" value="asus-tuf-4080"> Asus TUF 4080</label><br>
+            <label><input type="checkbox" name="gpu" value="asus-tuf-rx-7900-xt"> Asus TUF RX 7900XT</label><br>
+        </fieldset>
 
-        <select name="ram" id="ram" multiple>
-            <option value="">RAM</option>
-            <option value="corsair-vengence-lpx-1x8gb-ddr4">Corsair Vengence LPX 8GB (1x8gb) DDR4</option>
-            <option value="corsair-vengence-lpx-2x8gb-ddr4">Corsair Vengence LPX 16GB (2x8gb) DDR4</option>
-            <option value="corsair-vengence-2x8gb-ddr5">Corsair Vengeance 16GB (2x8gb) DDR5</option>
-            <option value="corsair-vengence-RGB-2x16gb-ddr5">Corsair Vengeance RGB 32GB (2x16gb) DDR5</option>
-            <option value="corsair-vengence-RGB-4x16gb-ddr5">Corsair Vengeance RGB 64GB (4x16gb) DDR5</option>
-        </select>
+        <fieldset>
+            <legend>RAM</legend>
+            <label><input type="checkbox" name="ram" value="teamgroup-t-force-delta-rgb-2x8gb-ddr5"> Teamgroup T Force Delta RGB 16GB (2x8gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="teamgroup-t-force-delta-rgb-2x16gb-ddr5"> Teamgroup T Force Delta RGB 32GB (2x16gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="teamgroup-t-force-delta-rgb-2x32gb-ddr5"> Teamgroup T Force Delta RGB 64GB (2x32gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="corsair-vengeance-rgb-2x8gb-ddr5"> Corsair Vengeance RGB 16GB (2x8gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="corsair-vengeance-rgb-2x16gb-ddr5"> Corsair Vengeance RGB 32GB (2x16gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="corsair-vengeance-rgb-2x32gb-ddr5"> Corsair Vengeance RGB 64GB (2x32gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z-rgb-2x8gb-ddr4"> G.Skill Trident Z RGB 16GB (2x8gb) DDR4</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z-rgb-2x16gb-ddr4"> G.Skill Trident Z RGB 32GB (2x16gb) DDR4</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z-rgb-2x32gb-ddr4"> G.Skill Trident Z RGB 64GB (2x32gb) DDR4</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x8gb-ddr5"> G.Skill Trident Z5 RGB 16GB (2x8gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x16gb-ddr5"> G.Skill Trident Z5 RGB 32GB (2x16gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x32gb-ddr5"> G.Skill Trident Z5 RGB 64GB (2x32gb) DDR5</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x8gb-ddr5-white"> G.Skill Trident Z5 RGB 16GB (2x8gb) DDR5 White</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x16gb-ddr5-white"> G.Skill Trident Z5 RGB 32GB (2x16gb) DDR5 White</label><br>
+            <label><input type="checkbox" name="ram" value="g.skill-trident-z5-rgb-2x32gb-ddr5-white"> G.Skill Trident Z5 RGB 64GB (2x32gb) DDR5 White</label><br>
+        </fieldset>
 
-        <select name="storage" id="storage">
-            <option value="">Storage</option>
-            <option value="crucial-p3-plus-1-tb-ssd">Crucial P3 Plus 1 TB SSD</option>
-            <option value="crucial-p3-plus-2-tb-ssd">Crucial P3 Plus 2 TB SSD</option>
-            <option value="samsung-990-pro-1-tb-ssd">Samsung 990 Pro 1 TB SSD</option>
-            <option value="samsung-990-pro-2-tb-ssd">Samsung 990 Pro 2 TB SSD</option>
-            <option value="seagate-barracuda-4-tb-hdd">Seagate BarraCuda 4 TB HDD</option>
-            <option value="seagate-barracuda-compute-8-tb-hdd">Seagate BarraCuda Compute 8 TB HDD</option>
-        </select>
+        <fieldset>
+            <legend>Storage</legend>
+            <label><input type="checkbox" name="storage" value="crucial-p3-plus-1-tb-ssd"> Crucial P3 Plus 1 TB SSD</label><br>
+            <label><input type="checkbox" name="storage" value="crucial-p3-plus-2-tb-ssd"> Crucial P3 Plus 2 TB SSD</label><br>
+            <label><input type="checkbox" name="storage" value="samsung-990-pro-1-tb-ssd"> Samsung 990 Pro 1 TB SSD</label><br>
+            <label><input type="checkbox" name="storage" value="samsung-990-pro-2-tb-ssd"> Samsung 990 Pro 2 TB SSD</label><br>
+            <label><input type="checkbox" name="storage" value="seagate-barracuda-4-tb-hdd"> Seagate BarraCuda 4 TB HDD</label><br>
+            <label><input type="checkbox" name="storage" value="seagate-barracuda-compute-8-tb-hdd"> Seagate BarraCuda Compute 8 TB HDD</label><br>
+        </fieldset>
 
-        <select name="motherboard" id="motherboard"></select>
-            <option value="">Motherboard</option>
-            <option value="1to-ssd">1 To SSD</option>
-            <option value="2to-hdd">2 To HDD</option>
-            <option value="4to-nvme">4 To NVMe</option>
-        </select>
+        <fieldset>
+            <legend>Motherboard</legend>
+            <label><input type="checkbox" name="motherboard" value="asus-rog-strix-z690-i-mitx"> Asus Rog Strix Z690I mItx</label><br>
+            <label><input type="checkbox" name="motherboard" value="gigabyte-b650-aero-g-atx"> Gigabyte AERO B650 G Atx</label><br>
+            <label><input type="checkbox" name="motherboard" value="gigabyte-x670-aorus-elite-ax-atx"> Gigabyte Aorus X670 Elite AX Atx</label><br>
+            <label><input type="checkbox" name="motherboard" value="msi-z490m-mpg-edge-matx"> Msi MPG Z490M Edge mAtx</label><br>
+            <label><input type="checkbox" name="motherboard" value="msi-h610m-e-pro-matx"> Msi Pro H610M-E mAtx</label><br>
+            <label><input type="checkbox" name="motherboard" value="asus-rog-z790-maximus-hero-atx"> Asus Rog Maximus Z790 Hero Atx</label><br>
+            <label><input type="checkbox" name="motherboard" value="asus-rog-z270-i-gaming-mitx"> Asus Rog Strix Z270-I Gaming mItx</label><br>
+            <label><input type="checkbox" name="motherboard" value="asus-prime-z490-a-atx"> Asus Prime Z490-A Atx</label><br>
+        </fieldset>
 
-        <select name="case" id="case"></select>
-            <option value="">Case</option>
-            <option value="1to-ssd">1 To SSD</option>
-            <option value="2to-hdd">2 To HDD</option>
-            <option value="4to-nvme">4 To NVMe</option>
-        </select>
+        <fieldset>
+            <legend>Case</legend>
+            <label><input type="checkbox" name="case" value="asus-prime-AP201-matx"> Asus Prime AP201 mAtx</label><br>
+            <label><input type="checkbox" name="case" value="coolermaster-masterbox-nr200p-mitx-white"> Coolermaster Masterbox NR200P mItx White</label><br>
+            <label><input type="checkbox" name="case" value="corsair-icue-5000x-atx-white"> Corsair ICUE 5000X Atx White</label><br>
+            <label><input type="checkbox" name="case" value="deepcool-ch560-digital-atx"> Deepcool CH560 Digital Atx</label><br>
+            <label><input type="checkbox" name="case" value="deepcool-matrexx-40-3fs-matx"> Deepcool Matrexx 40 3FS mAtx</label><br>
+            <label><input type="checkbox" name="case" value="nzxt-h5-flow-2023-atx"> Nzxt H5 Flow 2023 Atx</label><br>
+            <label><input type="checkbox" name="case" value="nzxt-h9-flow-2024-atx"> Nzxt H9 Flow 2024 Atx</label><br>
+        </fieldset>
 
-        <select name="cooler" id="cooler"></select>
-            <option value="">Cooler</option>
-            <option value="1to-ssd">1 To SSD</option>
-            <option value="2to-hdd">2 To HDD</option>
-            <option value="4to-nvme">4 To NVMe</option>
-        </select>
+        <fieldset>
+            <legend>Cooler</legend>
+            <label><input type="checkbox" name="cooler" value="nzxt-kraken-z73-360mm-aio"> Nzxt Kraken Z73 360mm Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="nzxt-kraken-z63-280mm-aio"> Nzxt Kraken Z63 280mm Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="nzxt-kraken-z53-240mm-aio"> Nzxt Kraken Z53 240mm Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="rog-ryujin-ii-360mm-aio"> Rog Ryujin II 360mm Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="rog-ryujin-ii-240mm-aio"> Rog Ryujin II 240mm Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="rog-ryujin-ii-360mm-argb-aio"> Rog Ryujin II 360mm ARGB Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="rog-ryujin-ii-240mm-argb-aio"> Rog Ryujin II 240mm ARGB Aio</label><br>
+            <label><input type="checkbox" name="cooler" value="thermalright-peerless-assassin-120-se-air-cooler"> Thermalright Peerless Assassin 120 SE Air-Cooler</label><br>
+        </fieldset>
 
-        <select name="fans" id="fans"></select>
-            <option value="">Fans</option>
-            <option value="1to-ssd">1 To SSD</option>
-            <option value="2to-hdd">2 To HDD</option>
-            <option value="4to-nvme">4 To NVMe</option>
-        </select>
+        <fieldset>
+            <legend>Fans</legend>
+            <label><input type="checkbox" name="fans" value="arctic-p12-max-120mm"> Arctic P12 Max 120mm</label><br>
+            <label><input type="checkbox" name="fans" value="nzxt-f120-rgb-120mm"> Nzxt F120 RGB 120mm</label><br>
+            <label><input type="checkbox" name="fans" value="thermalright-tl-c12cw-s-white-120mm"> Thermalright TL C12CW-S White 120mm</label><br>
+        </fieldset>
 
         <button type="button" id="submit-btn">Let's GO</button>
     </form>
