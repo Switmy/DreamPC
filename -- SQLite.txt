@@ -1,2 +1,2 @@
 -- SQLite
-IF(EXISTS (SELECT * from composants)) SELECT 1 
+IF(EXISTS (SELECT * from components)) SELECT 1 
