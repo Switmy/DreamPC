@@ -48,7 +48,7 @@ document.getElementById("submit-btn").addEventListener('click', function() {
         .then(() => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas for new drawing
 
-            if (motherboardData.value.includes("atx")) {
+            //if (motherboardData.value.includes("atx")) {
                 // Draw the GPU image at position (250, 50)
                 ctx.drawImage(gpuImage, 250, 50, 150, 150);
                 ctx.fillText("GPU", 250, 220);
@@ -60,7 +60,7 @@ document.getElementById("submit-btn").addEventListener('click', function() {
                 // Draw the Disk image at position (250, 300)
                 ctx.drawImage(disqueDurImage, 250, 300, 150, 150);
                 ctx.fillText("Disque Dur", 250, 470);
-            }
+            //}
         });
     })
     .catch(error => console.error('Erreur lors de la récupération des images ou des données:', error));
