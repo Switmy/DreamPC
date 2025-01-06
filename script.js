@@ -6,62 +6,36 @@ document.getElementById("submit-btn").addEventListener('click', function() {
     const fans = document.querySelector('#fans > option:checked').value.toLowerCase().replace(/ /g, '-');
     const Case = document.querySelector('#case > option:checked').value.toLowerCase().replace(/ /g, '-');
 
-    // Fetch the components as images and motherboard data as JSON
-    Promise.all([
-        fetch(`http://localhost:3000/api/components/gpu/${gpu}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/components/cooler/${cooler}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/components/ram/${ram}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/components/motherboard/${motherboard}`).then(res => res.blob()),  // Fetching motherboard image
-        fetch(`http://localhost:3000/api/components/motherboard/${motherboard}`).then(res => res.json()),  // Fetching motherboard data as JSON
-        fetch(`http://localhost:3000/api/components/fans/${fans}`).then(res => res.blob()),
-        fetch(`http://localhost:3000/api/components/case/${Case}`).then(res => res.blob())
-    ])
-    .then(([gpuBlob, coolerBlob, ramBlob, motherboardBlob, motherboardData, fansBlob, CaseBlob]) => {
-        const canvas = document.getElementById('configCanvas');
-        const ctx = canvas.getContext('2d');
+    // Fetch and draw components one at a time
+    const components = ['gpu', 'cooler', 'ram', 'motherboard', 'fans', 'case'];
+    const canvas = document.getElementById('configCanvas');
+    const ctx = canvas.getContext('2d');
 
-        const gpuImage = new Image();
-        const coolerImage = new Image();
-        const ramImage = new Image();
-        const motherboardImage = new Image();
-        const fansImage = new Image();
-        const CaseImage = new Image();
+    components.forEach((component, index) => {
+    const selectedValue = document.querySelector(`#${component} > option:checked`).value
+        .toLowerCase()
+        .replace(/ /g, '-');
 
-        // Log motherboard name
-        console.log("Motherboard Name:", motherboardData.name);  // This is the text value you're after!
+    fetch(`http://localhost:3000/api/components/${component}/${selectedValue}`)
+        .then(res => res.json())
+        .then(({ imageUrl, metadata }) => {
+            const image = new Image();
+            image.onload = () => {
+                // Draw image on canvas (position is an example; adjust as needed)
+                ctx.drawImage(image, index * 100 + 50, 50, 150, 150);
 
-        // Optionally display the motherboard name in a DOM element
-        const motherboardNameElement = document.getElementById('motherboardNameDisplay');
-        if (motherboardNameElement) {
-            motherboardNameElement.innerText = `Motherboard Name: ${motherboardData.name}`;
-        }
+                // Log and optionally display metadata
+                console.log(`${component} metadata:`, metadata);
+                if (component === 'motherboard') {
+                    const motherboardNameElement = document.getElementById('motherboardNameDisplay');
+                    if (motherboardNameElement) {
+                        motherboardNameElement.innerText = `Motherboard Name: ${metadata.name}`;
+                    }
+                }
+            };
+            image.src = `http://localhost:3000${imageUrl}`;
+        })
+        .catch(error => console.error(`Error fetching ${component}:`, error));
+});
 
-        // Once all images are loaded, draw them on the canvas
-        Promise.all([
-            new Promise((resolve) => { gpuImage.onload = resolve; gpuImage.src = URL.createObjectURL(gpuBlob); }),
-            new Promise((resolve) => { coolerImage.onload = resolve; coolerImage.src = URL.createObjectURL(coolerBlob); }),
-            new Promise((resolve) => { ramImage.onload = resolve; ramImage.src = URL.createObjectURL(ramBlob); }),
-            new Promise((resolve) => { motherboardImage.onload = resolve; motherboardImage.src = URL.createObjectURL(motherboardBlob); }),
-            new Promise((resolve) => { fansImage.onload = resolve; fansImage.src = URL.createObjectURL(fansBlob); }),
-            new Promise((resolve) => { CaseImage.onload = resolve; CaseImage.src = URL.createObjectURL(CaseBlob); })
-        ])
-        .then(() => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas for new drawing
-
-            //if (motherboardData.value.includes("atx")) {
-                // Draw the GPU image at position (250, 50)
-                ctx.drawImage(gpuImage, 250, 50, 150, 150);
-                ctx.fillText("GPU", 250, 220);
-
-                // Draw the RAM image at position (50, 300)
-                ctx.drawImage(ramImage, 50, 300, 150, 150);
-                ctx.fillText("RAM", 50, 470);
-
-                // Draw the Disk image at position (250, 300)
-                ctx.drawImage(disqueDurImage, 250, 300, 150, 150);
-                ctx.fillText("Disque Dur", 250, 470);
-            //}
-        });
-    })
-    .catch(error => console.error('Erreur lors de la récupération des images ou des données:', error));
 });

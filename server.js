@@ -9,50 +9,49 @@ app.use(cors()); // Ajout de CORS pour permettre les requêtes cross-origin
 
 const db = createDatabase();
 
-// Exemple de route pour récupérer les images associées aux composants
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.get('/api/components/:type/:value', (req, res) => {
     const { type, value } = req.params;
 
-    // Requête SQL pour récupérer l'image associée à l'option sélectionnée
-    db.get(`SELECT image FROM components WHERE type = ? AND value = ?`, [type, value], (err, row) => {
+    db.get(`SELECT image, metadata FROM components WHERE type = ? AND value = ?`, [type, value], (err, row) => {
         if (err) {
-            res.status(500).json({ error: err.message });
+            console.error('Database error:', err.message);
+            res.status(500).json({ error: 'Internal server error' });
             return;
         }
 
-        if (row && row.image) {
-            try {
-                // Construction du chemin absolu de l'image
-                const imagePath = path.join(__dirname, 'images', row.image);
-
-                // Vérification si le fichier existe
-                fs.promises.access(imagePath) // Utilisation de la version asynchrone
-                    .then(() => {
-                        // Vérification que l'extension est bien une image (par exemple, jpg, png, jpeg, gif)
-                        const extname = path.extname(imagePath).toLowerCase();
-                        if (['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
-                            res.sendFile(imagePath);
-                        } else {
-                            res.status(415).send('Unsupported File format'); // 415 Unsupported Media Type
-                        }
-                    })
-                    .catch(() => {
-                        // Si le fichier n'existe pas
-                        res.status(404).send('Image not found');
-                    });
-            } catch (err) {
-                // Gestion des erreurs générales
-                console.error(err);
-                res.status(500).send('Error when sending image');
-            }
-        } else {
-            // Si `row` est nul ou non défini
-            res.status(400).send('Non-valid Image data');
+        if (!row) {
+            console.warn(`Component not found: type=${type}, value=${value}`);
+            res.status(404).json({ error: 'Component not found' });
+            return;
         }
+
+        const imagePath = path.join(__dirname, 'images', row.image);
+
+        // Check if the file exists and has a valid image extension
+        fs.promises
+            .access(imagePath)
+            .then(() => {
+                const extname = path.extname(imagePath).toLowerCase();
+                if (!['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
+                    console.warn(`Unsupported file format for image: ${imagePath}`);
+                    res.status(415).json({ error: 'Unsupported file format' });
+                    return;
+                }
+
+                const imageUrl = `/images/${row.image}`; // Path for static serving
+                const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+
+                res.json({ imageUrl, metadata });
+            })
+            .catch((fileErr) => {
+                console.error('File access error:', fileErr.message);
+                res.status(404).json({ error: 'Image not found' });
+            });
     });
 });
 
-// Démarrer le serveur sur le port 3000
 app.listen(3000, () => {
     console.log('Started server on http://localhost:3000');
 });
