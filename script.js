@@ -36,11 +36,11 @@ document.getElementById("submit-btn").addEventListener('click', function() {
                 .catch(error => console.error(`Error fetching ${componentType} (${value}):`, error));
         });
     }
-    fetchAndDrawComponent('gpu', gpu, 50);
-    fetchAndDrawComponent('cooler', cooler, 250);
-    fetchAndDrawComponent('ram', ram, 450);
-    fetchAndDrawComponent('motherboard', motherboard, 150);
-    fetchAndDrawComponent('fans', fans, 300);
-    fetchAndDrawComponent('case', Case, 500);
+    fetchAndDrawComponent('gpu', gpu, 100);
+    fetchAndDrawComponent('cooler', cooler, 100);
+    fetchAndDrawComponent('ram', ram, 100);
+    fetchAndDrawComponent('motherboard', motherboard, 100);
+    fetchAndDrawComponent('fans', fans, 100);
+    fetchAndDrawComponent('case', Case, 50);
 });
 
