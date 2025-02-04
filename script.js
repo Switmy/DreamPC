@@ -22,25 +22,28 @@ document.getElementById("submit-btn").addEventListener('click', function() {
     const canvas = document.getElementById('configCanvas');
     const ctx = canvas.getContext('2d');
 
-    function fetchAndDrawComponent(componentType, selectedValues, yOffset) {
+    function fetchAndDrawComponent(componentType, selectedValues, xposition, yposition, xdimention, ydimention) {
         selectedValues.forEach((value, index) => {
             fetch(`http://localhost:3000/api/components/${componentType}/${value}`)
                 .then(res => res.json())
                 .then(({ imageUrl }) => {
                     const image = new Image();
                     image.onload = () => {
-                        ctx.drawImage(image, index * 100 + 50, yOffset, 150, 150);
+                        ctx.drawImage(image, xposition, yposition, xdimention, ydimention);
                     };
                     image.src = `http://localhost:3000${imageUrl}`;
                 })
                 .catch(error => console.error(`Error fetching ${componentType} (${value}):`, error));
         });
     }
-    fetchAndDrawComponent('gpu', gpu, 100);
-    fetchAndDrawComponent('cooler', cooler, 100);
-    fetchAndDrawComponent('ram', ram, 100);
-    fetchAndDrawComponent('motherboard', motherboard, 100);
-    fetchAndDrawComponent('fans', fans, 100);
-    fetchAndDrawComponent('case', Case, 50);
+    fetchAndDrawComponent('gpu', gpu, 100, 200, 150, 150);
+    fetchAndDrawComponent('cooler', cooler, 100, 200, 30, 30);
+    fetchAndDrawComponent('ram', ram, 100, 200, 90, 90);
+    fetchAndDrawComponent('motherboard', motherboard, 100, 200, 200, 200);
+    fetchAndDrawComponent('fans', fans, 100, 200, 90, 90);
+    fetchAndDrawComponent('case', Case, 100, 200, 400, 400);
 });
 
+if (motherboard.some(mb => mb.includes("atx"))) {
+    // Do something
+}

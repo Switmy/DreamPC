@@ -7,62 +7,51 @@ app = Flask(__name__, template_folder='.')
 app.config['UPLOAD_FOLDER'] = 'images/'  # Directory for processed images
 app.secret_key = 'supersecretkey'
 
-import cv2
-import numpy as np
-
-def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost = 1.3):
-    #Set black_and_white=False to remove the black_and_white filter....
-    #And set brightness_booOOOOOOOOOst = 1.0 to remove the brightness_booOOOOOOOOOst 
-    #brightness_boost can be controlled with the 1.(...) number (higher is more boooooost)
+def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost=1.3):
     frame_width, frame_height = frame_size
-
+    
     if image.shape[2] == 4:
         alpha_channel = image[:, :, 3]
     else:
         alpha_channel = None
-
+    
     if alpha_channel is not None:
         coords = cv2.findNonZero(alpha_channel)
         x, y, w, h = cv2.boundingRect(coords)
         image_cropped = image[y:y+h, x:x+w]
     else:
         image_cropped = image
-
+    
     orig_height, orig_width = image_cropped.shape[:2]
     aspect_ratio_image = orig_width / orig_height
     aspect_ratio_frame = frame_width / frame_height
-
+    
     if aspect_ratio_image > aspect_ratio_frame:
         new_width = frame_width
         new_height = int(frame_width / aspect_ratio_image)
     else:
         new_height = frame_height
         new_width = int(frame_height * aspect_ratio_image)
-
+    
     resized_image = cv2.resize(image_cropped, (new_width, new_height), interpolation=cv2.INTER_AREA)
-
+    
     if black_and_white:
         resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-        #_, resized_image = cv2.threshold(resized_image, 127, 255, cv2.THRESH_BINARY)
-        # Add a new dimension to the black and white image
-        resized_image = np.expand_dims(resized_image, axis=-1)
-
+        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_GRAY2BGR)  # Ensure it remains 3-channel
+    
     if brightness_boost != 1.0:
-        resized_image = cv2.addWeighted(resized_image, brightness_boost, resized_image, 0, 0)
-        resized_image = np.expand_dims(resized_image, axis=-1)
-
+        resized_image = cv2.convertScaleAbs(resized_image, alpha=brightness_boost, beta=0)
+    
     if image.shape[2] == 4:
-        new_image = np.zeros((frame_height, frame_width, 4), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255, 0)
+        new_image = np.full((frame_height, frame_width, 4), (255, 255, 255, 255), dtype=np.uint8)
     else:
-        new_image = np.zeros((frame_height, frame_width, 3), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255)
-
+        new_image = np.full((frame_height, frame_width, 3), 255, dtype=np.uint8)
+    
     x_offset = (frame_width - new_width) // 2
     y_offset = (frame_height - new_height) // 2
-
+    
     new_image[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = resized_image
-
+    
     return new_image
 
 def process_image(file, new_name, output_dir):
