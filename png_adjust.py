@@ -7,10 +7,7 @@ app = Flask(__name__, template_folder='.')
 app.config['UPLOAD_FOLDER'] = 'images/'  # Directory for processed images
 app.secret_key = 'supersecretkey'
 
-def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost = 1.3):
-    #Set black_and_white=False to remove the black_and_white filter....
-    #And set brightness_booOOOOOOOOOst = 1.0 to remove the brightness_booOOOOOOOOOst 
-    #brightness_boost can be controlled with the 1.(...) number (higher is more boooooost)
+def center_and_fill_image(image, frame_size):
     frame_width, frame_height = frame_size
 
     if image.shape[2] == 4:
@@ -38,29 +35,16 @@ def center_and_fill_image(image, frame_size, black_and_white=True, brightness_bo
 
     resized_image = cv2.resize(image_cropped, (new_width, new_height), interpolation=cv2.INTER_AREA)
 
-    if black_and_white:
-        resized_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-        #_, resized_image = cv2.threshold(resized_image, 127, 255, cv2.THRESH_BINARY)
-        # Add a new dimension to the black and white image
-        resized_image = np.expand_dims(resized_image, axis=-1)
+    resized_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    if brightness_boost != 1.0:
-        resized_image = cv2.addWeighted(resized_image, brightness_boost, resized_image, 0, 0)
-        resized_image = np.expand_dims(resized_image, axis=-1)
-
-    if image.shape[2] == 4:
-        new_image = np.zeros((frame_height, frame_width, 4), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255, 0)
-    else:
-        new_image = np.zeros((frame_height, frame_width, 3), dtype=np.uint8)
-        new_image[:, :] = (255, 255, 255)
-
+    cv2.destroyAllWindows()
+        
     x_offset = (frame_width - new_width) // 2
     y_offset = (frame_height - new_height) // 2
 
-    new_image[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = resized_image
+    resized_image[y_offset:y_offset + new_height, x_offset:x_offset + new_width]
 
-    return new_image
+    return resized_image
 
 def process_image(file, new_name, output_dir):
     # Save the uploaded file temporarily in memory
