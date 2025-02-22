@@ -30,7 +30,10 @@ h1 {
     color: #ffffff;
     margin-bottom: 20px;
 }
-
+h6 {
+    color: #ffffff;
+    text-decoration: none;
+}
 form {
     margin-bottom: 20px;
 }
