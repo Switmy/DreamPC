@@ -43,4 +43,3 @@ document.getElementById("submit-btn").addEventListener('click', function() {
     fetchAndDrawComponent('fans', fans, 100);
     fetchAndDrawComponent('case', Case, 50);
 });
-
