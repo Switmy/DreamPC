@@ -17,7 +17,7 @@ function createDatabase() {
         // Insertion des données
         const components = [
             { type: 'case', value:"nzxt-h9-flow-2024-atx", name: 'ATX NZXT H9 Flow 2024', image: 'nzxt-h9-2024-flow.png'},
-            { type: 'case', value:"asus-prime-AP201-matx", name: 'microATX Asus Prime AP201', image: 'asusprime-AP201.png'},
+            { type: 'case', value:"asus-prime-ap201-matx", name: 'microATX Asus Prime AP201', image: 'asusprime-AP201.png'},
             { type: 'case', value:"nzxt-h5-flow-2023-atx", name: 'ATX NZXT H5 Flow 2023', image: 'nzxt-h5-2023-flow.png'},
             { type: 'case', value:"deepcool-matrexx-40-3fs-matx", name: 'microATX Deepcool Matrexx 40', image: 'deepcool-matrexx-40-3fs.png'},
             { type: 'case', value:"deepcool-ch560-digital-atx", name: 'ATX Deepcool CH560 Digital', image: 'deepcool-ch560-digital.png'},
@@ -51,20 +51,23 @@ function createDatabase() {
             //{ type: 'storage', value:'seagate-barracuda-compute-8-tb-hdd', name: 'Seagate BarraCuda Compute 8 TB HDD'},
             { type: 'motherboard', value:'asus-rog-strix-z690-i-mitx', name: 'Asus Rog Strix Z690I mItx', image: 'asus-rog-strix-z690-i.png'},
             { type: 'motherboard', value:'gigabyte-b650-aero-g-atx', name: 'Gigabyte AERO B650 G Atx', image: 'gigabyte-b650-aero-g.png'},
-            { type: 'motherboard', value:'gigabyte-x670-aorus-elite-ax-atx', name: 'Gigabyte Aorus X670 Elite AX Atx', image: 'gigabyte-b650-aero-g.png'},
+            { type: 'motherboard', value:'gigabyte-x670-aorus-elite-ax-atx', name: 'Gigabyte Aorus X670 Elite AX Atx', image: 'gigabyte-x670-aorus-elite-ax.png'},
             { type: 'motherboard', value:'msi-z490m-mpg-edge-matx', name: 'Msi MPG Z490M Edge mAtx', image: 'msi-mpg-z490m-edge.png'},
             { type: 'motherboard', value:'msi-h610m-e-pro-matx', name: 'Msi Pro H610M-E mAtx', image: 'msi-pro-h610m-e.png'},
             { type: 'motherboard', value:'asus-rog-z790-maximus-hero-atx', name: 'Asus Rog Maximus Z790 Hero Atx', image: 'rog-maximus-z790-hero.png'},
             { type: 'motherboard', value:'asus-rog-z270-i-gaming-mitx', name: 'Asus Rog Strix Z270-I Gaming mItx', image: 'rog-strix-z270-i-gaming.png'},
             { type: 'motherboard', value:'asus-prime-z490-a-atx', name: 'Asus Prime Z490-A Atx', image: 'asus-prime-z490-a.png'},
-            { type: 'cooler', value:'nzxt-kraken-z73-360mm-aio', name: 'Nzxt Kraken Z73 360mm Aio', image: 'nzxt-kraken.png', image2:'nzxt-f120-rgb.png'},
-            { type: 'cooler', value:'nzxt-kraken-z73-280mm-aio', name: 'Nzxt Kraken Z73 280mm Aio', image: 'nzxt-kraken.png', image2:'nzxt-f120-rgb.png'},
-            { type: 'cooler', value:'nzxt-kraken-z73-240mm-aio', name: 'Nzxt Kraken Z73 240mm Aio', image: 'nzxt-kraken.png', image2:'nzxt-f120-rgb.png'},
-            { type: 'cooler', value:'rog-ryujin-ii-360mm-aio', name: 'Rog Ryujin II 360mm Aio', image: 'rog-ryujin-ii.png', image2:'arctic-p12-max.png'},
-            { type: 'cooler', value:'rog-ryujin-ii-240mm-aio', name: 'Rog Ryujin II 240mm Aio', image: 'rog-ryujin-ii.png', image2:'arctic-p12-max.png'},
-            { type: 'cooler', value:'rog-ryujin-ii-360mm-argb-aio', name: 'Rog Ryujin II 360mm ARGB Aio', image: 'rog-ryujin-ii.png', image2:'nzxt-f120-rgb.png'},
-            { type: 'cooler', value:'rog-ryujin-ii-240mm-argb-aio', name: 'Rog Ryujin II 240mm ARGB Aio', image: 'rog-ryujin-ii.png', image2:'nzxt-f120-rgb.png'},
+            { type: 'cooler', value:'nzxt-kraken-z73-360mm-aio', name: 'Nzxt Kraken Z73 360mm Aio', image: 'nzxt-kraken.png', },
+            { type: 'cooler', value:'nzxt-kraken-z63-280mm-aio', name: 'Nzxt Kraken Z73 280mm Aio', image: 'nzxt-kraken.png', },
+            { type: 'cooler', value:'nzxt-kraken-z53-240mm-aio', name: 'Nzxt Kraken Z73 240mm Aio', image: 'nzxt-kraken.png', },
+            { type: 'cooler', value:'rog-ryujin-ii-360mm-aio', name: 'Rog Ryujin II 360mm Aio', image: 'rog-ryujin-ii.png', },
+            { type: 'cooler', value:'rog-ryujin-ii-240mm-aio', name: 'Rog Ryujin II 240mm Aio', image: 'rog-ryujin-ii.png', },
+            { type: 'cooler', value:'rog-ryujin-ii-360mm-argb-aio', name: 'Rog Ryujin II 360mm ARGB Aio', image: 'rog-ryujin-ii.png', },
+            { type: 'cooler', value:'rog-ryujin-ii-240mm-argb-aio', name: 'Rog Ryujin II 240mm ARGB Aio', image: 'rog-ryujin-ii.png', },
             { type: 'cooler', value:'thermalright-peerless-assassin-120-se-air-cooler', name: 'Thermalright Peerless Assassin 120 SE Air-Cooler', image: 'thermalright-peerless-assassin-120-se.png'},
+            { type: 'fans', value:'arctic-p12-max-120mm', name:'Arctic P12 MAX 120mm', image:'fan1.png'},
+            { type: 'fans', value:'nzxt-f120-rgb-120mm', name:'NZXT F120 RGB 120mm', image:'fan3.png'},
+            { type: 'fans', value:'thermalright-tl-c12cw-s-white-120mm', name:'Thermalright TL C12CW S White 120mm', image:'fan2.png'}
         ];
 
         // Prépare l'insertion des components
