@@ -15,23 +15,24 @@ app.get('/api/components/:type/:value', (req, res) => {
     const { type, value } = req.params;
 
     // Validate inputs (basic example, consider stricter validation based on your requirements)
-    if (!type||!value) {
-        res.status(400).json({error: 'type and value are not validated'})
+    if (!type || !value) {
+        res.status(400).json({ error: 'type and value are not validated' });
         return;
     }
 
-    //get the image and do all validations
+    // Get the component data dynamically
     db.get(
-        `SELECT image, value FROM components WHERE type = ? AND value = ?`,
+        `SELECT * FROM components WHERE type = ? AND value = ?`,
         [type, value],
         async (err, row) => {
             if (err) {
-                console.error('Database error:', err.message);
+                console.error(`Database error for type=${type} and value=${value}:`, err.message);
                 res.status(500).json({ error: 'Database error occurred' });
                 return;
             }
     
             if (!row) {
+                console.warn(`Component not found for type=${type} and value=${value}`);
                 res.status(404).json({ error: `Component not found for type=${type} and value=${value}` });
                 return;
             }
@@ -41,32 +42,35 @@ app.get('/api/components/:type/:value', (req, res) => {
             try {
                 await fs.promises.access(imagePath);
     
-                // Validate file extension
                 const extname = path.extname(imagePath).toLowerCase();
                 if (!['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
+                    console.error(`Invalid image format for file=${imagePath}:`, extname);
                     res.status(400).json({ error: `Invalid image format: ${extname}` });
                     return;
                 }
     
-                // Check if value is JSON-parsable
-                let parsedValue;
-                try {
-                    parsedValue = JSON.parse(row.value);
-                } catch {
-                    parsedValue = row.value; // Treat it as a plain string if not JSON
+                if (row.value) {
+                    try {
+                        row.value = JSON.parse(row.value);
+                    } catch {
+                        // Leave it as a string if not JSON-parsable
+                    }
                 }
     
-                const imageUrl = `/images/${row.image}`; // Path for static serving
-                res.json({ imageUrl, value: parsedValue });
+                const response = {
+                    ...row,
+                    imageUrl: `/images/${row.image}`,
+                };
+    
+                res.json(response);
             } catch (fileErr) {
-                console.error('File access error:', fileErr.message);
+                console.error(`File access error for path=${imagePath}:`, fileErr.message);
                 res.status(404).json({ error: 'Image file not found' });
             }
         }
-    );    
+    );
 });
 
 app.listen(3000, () => {
     console.log('Started server on http://localhost:3000');
 });
-
