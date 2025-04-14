@@ -13,7 +13,6 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     const gpu = getSelectedValues('gpu');
     const aio = getSelectedValues('aio');
     const aircooler = getSelectedValues('aircooler');
-    const ram = getSelectedValues('ram');
     const motherboard = getSelectedValues('motherboard');
     const fans = getSelectedValues('fans');
     const Case = getSelectedValues('case');
@@ -84,36 +83,36 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     // GPU position size
     const gpuPositionSize = {
     atx: { atx: {x: 150, y: 210, size: 340}, matx: { x: 150, y: 210, size: 290 }, mitx: { x: 150, y: 210, size: 280 }, eatx: { x: 150, y: 210, size: 350 } },
-    matx: { atx: {x: 140, y: 230, size: 280}, matx: { x: 140, y: 230, size: 250 }, mitx: { x: 140, y: 230, size: 230 }, eatx: { x: 140, y: 230, size: 300 } },
-    mitx: { atx: {x: 150, y: 230, size: 250}, matx: { x: 150, y: 230, size: 220 }, mitx: { x: 150, y: 230, size: 200 }, eatx: { x: 150, y: 230, size: 270 } },
+    matx: { atx: {x: 150, y: 220, size: 360}, matx: { x: 150, y: 220, size: 320 }, mitx: { x: 150, y: 220, size: 230 }, eatx: { x: 150, y: 220, size: 300 } },
+    mitx: { atx: {x: 135, y: 245, size: 430}, matx: { x: 135, y: 245, size: 390 }, mitx: { x: 135, y: 245, size: 330 }, eatx: { x: 135, y: 245, size: 440 } },
     eatx: { atx : {x: 150, y: 230, size: 380}, matx: { x: 150, y: 230, size: 350 }, mitx: { x: 150, y: 230, size: 330 }, eatx: { x: 150, y: 230, size: 400 } }
     };
     // motherboard position size
     const motherboardPositionSize = {
-    atx: { atx: {x: 140, y: 190, size: 250}, matx: { x: 160, y: 190, size: 215 }, mitx: { x: 160, y: 190, size: 170 }, eatx: { x: 160, y: 190, size: 270 } },
-    matx: { atx: {x: 160, y: 190, size: 230}, matx: { x: 160, y: 190, size: 210 }, mitx: { x: 160, y: 190, size: 190 }, eatx: { x: 160, y: 190, size: 250 } },
-    mitx: { atx: {x: 160, y: 190, size: 230}, matx: { x: 160, y: 190, size: 210 }, mitx: { x: 160, y: 190, size: 190 }, eatx: { x: 160, y: 190, size: 250 } },
+    atx: { atx: {x: 140, y: 190, size: 250}, matx: { x: 160, y: 200, size: 215 }, mitx: { x: 160, y: 190, size: 170 }, eatx: { x: 160, y: 190, size: 270 } },
+    matx: { atx: {x: 165, y: 190, size: 230}, matx: { x: 160, y: 190, size: 245 }, mitx: { x: 160, y: 190, size: 215 }, eatx: { x: 165, y: 190, size: 250 } },
+    mitx: { atx: {x: 160, y: 190, size: 230}, matx: { x: 160, y: 190, size: 210 }, mitx: { x: 130, y: 215, size: 240 }, eatx: { x: 160, y: 190, size: 250 } },
     eatx: { atx: {x: 160, y: 190, size: 270}, matx: { x: 160, y: 190, size: 250 }, mitx: { x: 160, y: 190, size: 230 }, eatx: { x: 160, y: 190, size: 290 } }
     };
     // RAM position size
-    const ramPositionSize = {
-    atx : { atx: { x: 280, y: 210, size: 110 }},
-    matx: { atx: { x: 270, y: 220, size: 100 }},
-    mitx: { atx: { x: 270, y: 220, size: 90 }},
-    eatx: { atx: { x: 270, y: 220, size: 120 }}
-    };
+    //const ramPositionSize = {
+    //atx : { atx: { x: 280, y: 210, size: 110 }},
+    //matx: { atx: { x: 300, y: 210, size: 130 }},
+    //mitx: { atx: { x: 270, y: 220, size: 90 }},
+    //eatx: { atx: { x: 270, y: 220, size: 120 }}
+    //};
     // AIO position size
     const aioPositionSize = {
         atx: { atx: {x: 235, y: 230, size: 75}, eatx: { x: 235, y: 240, size: 90 } },
-        matx: { atx: {x: 230, y: 210, size: 70}, eatx: { x: 230, y: 210, size: 80 } },
-        mitx: { atx: {x: 230, y: 210, size: 60}, eatx: { x: 230, y: 210, size: 70 } },
+        matx: { atx: {x: 240, y: 230, size: 90}, eatx: { x: 230, y: 210, size: 100 } },
+        mitx: { atx: {x: 220, y: 275, size: 100}, eatx: { x: 230, y: 210, size: 110 } },
         eatx: { atx: {x: 230, y: 210, size: 105}, eatx: { x: 230, y: 210, size: 115 } }
     };
     // aircooler position size
     const aircoolerPositionSize = {
-        atx: { atx: {x: 215, y: 210, size: 120}, eatx: { x: 215, y: 210, size: 140 } },
-        matx: { atx: {x: 230, y: 210, size: 100}, eatx: { x: 230, y: 210, size: 110 } },
-        mitx: { atx: {x: 230, y: 210, size: 90}, eatx: { x: 230, y: 210, size: 100 } },
+        atx: { atx: {x: 200, y: 210, size: 140}, eatx: { x: 215, y: 210, size: 160 } },
+        matx: { atx: {x: 205, y: 210, size: 160}, eatx: { x: 220, y: 210, size: 175 } },
+        mitx: { atx: {x: 170, y: 235, size: 190}, eatx: { x: 180, y: 235, size: 210 } },
         eatx: { atx: {x: 230, y: 210, size: 120}, eatx: { x: 230, y: 210, size: 130 } }
     };
     // Fans position size
@@ -125,28 +124,25 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     };
 
     // Fetch data for each component type
-    const [caseData, gpuData, motherboardData, aioData, aircoolerData, fansData, ramData] = await Promise.all([
+    const [caseData, gpuData, motherboardData, aioData, aircoolerData, fansData] = await Promise.all([
         fetchData('case', Case),
         fetchData('gpu', gpu),
         fetchData('motherboard', motherboard),
         fetchData('aio', aio),
         fetchData('aircooler', aircooler),
         fetchData('fans', fans),
-        fetchData('ram', ram)
     ]);
 
     // Set dimensions for each component (2 paragrphs.)
     const caseFormat = caseData?.length > 0 ? getData(caseData, 'format').toLowerCase() : null;
     const gpuFormat = gpuData?.length > 0 ? getData(gpuData, 'format').toLowerCase() : null;
     const motherboardFormat = motherboardData?.length > 0 ? getData(motherboardData, 'format').toLowerCase() : null;
-    const ramFormat = "atx" // ram is always same size
     const aioFormat = aioData?.length > 0 ? getData(aioData, 'format').toLowerCase() : null;
     const aircoolerFormat = aircoolerData?.length > 0 ? getData(aircoolerData, 'format').toLowerCase() : null;
     const fansFormat = fansData?.length > 0 ? getData(fansData, 'format').toLowerCase() : null;
 
     const gpuDimensions = gpuFormat ? setDimensions(gpuFormat, gpuPositionSize, caseFormat) : null;
     const motherboardDimensions = motherboardFormat ? setDimensions(motherboardFormat, motherboardPositionSize, caseFormat) : null;
-    const ramDimentions = ramFormat ? setDimensions(ramFormat, ramPositionSize, caseFormat) : null;
     const aioDimensions = aioFormat ? setDimensions(aioFormat, aioPositionSize, caseFormat) : null;
     const aircoolerDimensions = aircoolerFormat ? setDimensions(aircoolerFormat, aircoolerPositionSize, caseFormat) : null;
     const fansDimensions = fansFormat ? setDimensions(fansFormat, fansPositionSize, caseFormat) : null;
@@ -155,7 +151,6 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     const componentsToDraw = [
         { dimensions: { x: 100, y: 100, size: 500 }, data: caseData, key: 'case' }, // case has hardcoded dimensions
         { dimensions: motherboardDimensions, data: motherboardData, key: 'motherboard' },
-        { dimensions: ramDimentions, data: ramData, key: 'ram' }, 
         { dimensions: aircoolerDimensions, data: aircoolerData, key: 'aircooler' },
         { dimensions: aioDimensions, data: aioData, key: 'aio' },
         { dimensions: fansDimensions, data: fansData, key: 'fans' },
