@@ -82,17 +82,17 @@ document.getElementById("submit-btn").addEventListener('click', async function (
 
     // GPU position size
     const gpuPositionSize = {
-    atx: { atx: {x: 150, y: 210, size: 340}, matx: { x: 150, y: 210, size: 290 }, mitx: { x: 150, y: 210, size: 280 }, eatx: { x: 150, y: 210, size: 350 } },
-    matx: { atx: {x: 150, y: 220, size: 360}, matx: { x: 150, y: 220, size: 320 }, mitx: { x: 150, y: 220, size: 230 }, eatx: { x: 150, y: 220, size: 300 } },
-    mitx: { atx: {x: 135, y: 245, size: 430}, matx: { x: 135, y: 245, size: 390 }, mitx: { x: 135, y: 245, size: 330 }, eatx: { x: 135, y: 245, size: 440 } },
-    eatx: { atx : {x: 150, y: 230, size: 380}, matx: { x: 150, y: 230, size: 350 }, mitx: { x: 150, y: 230, size: 330 }, eatx: { x: 150, y: 230, size: 400 } }
+    atx : { eatx: {x: 160, y: 210, size: 340}, atx: { x: 160, y: 210, size: 290 }, matx: { x: 165, y: 260, size: 210 }, mitx: { x: 165, y: 260, size: 190 } },
+    matx: { eatx: {x: 160, y: 220, size: 360}, atx: { x: 160, y: 220, size: 320 }, matx: { x: 165, y: 270, size: 230 }, mitx: { x: 165, y: 240, size: 200 } },
+    mitx: { eatx: {x: 135, y: 245, size: 430}, atx: { x: 135, y: 245, size: 390 }, matx: { x: 135, y: 300, size: 290 }, mitx: { x: 135, y: 300, size: 270 } },
+    eatx: { eatx: {x: 140, y: 240, size: 310}, atx: { x: 150, y: 250, size: 260 }, matx: { x: 150, y: 290, size: 180 }, mitx: { x: 150, y: 290, size: 160 } }
     };
     // motherboard position size
     const motherboardPositionSize = {
     atx: { atx: {x: 140, y: 190, size: 250}, matx: { x: 160, y: 200, size: 215 }, mitx: { x: 160, y: 190, size: 170 }, eatx: { x: 160, y: 190, size: 270 } },
     matx: { atx: {x: 165, y: 190, size: 230}, matx: { x: 160, y: 190, size: 245 }, mitx: { x: 160, y: 190, size: 215 }, eatx: { x: 165, y: 190, size: 250 } },
     mitx: { atx: {x: 160, y: 190, size: 230}, matx: { x: 160, y: 190, size: 210 }, mitx: { x: 130, y: 215, size: 240 }, eatx: { x: 160, y: 190, size: 250 } },
-    eatx: { atx: {x: 160, y: 190, size: 270}, matx: { x: 160, y: 190, size: 250 }, mitx: { x: 160, y: 190, size: 230 }, eatx: { x: 160, y: 190, size: 290 } }
+    eatx: { atx: {x: 130, y: 220, size: 240}, matx: { x: 160, y: 190, size: 250 }, mitx: { x: 160, y: 190, size: 230 }, eatx: { x: 160, y: 190, size: 260 } }
     };
     // RAM position size
     //const ramPositionSize = {
@@ -103,17 +103,17 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     //};
     // AIO position size
     const aioPositionSize = {
-        atx: { atx: {x: 235, y: 230, size: 75}, eatx: { x: 235, y: 240, size: 90 } },
-        matx: { atx: {x: 240, y: 230, size: 90}, eatx: { x: 230, y: 210, size: 100 } },
-        mitx: { atx: {x: 220, y: 275, size: 100}, eatx: { x: 230, y: 210, size: 110 } },
-        eatx: { atx: {x: 230, y: 210, size: 105}, eatx: { x: 230, y: 210, size: 115 } }
+        atx: { atx: {x: 235, y: 230, size: 75}},
+        matx: { atx: {x: 240, y: 230, size: 90}},
+        mitx: { atx: {x: 220, y: 275, size: 100}},
+        eatx: { atx: {x: 225, y: 260, size: 65}}
     };
     // aircooler position size
     const aircoolerPositionSize = {
-        atx: { atx: {x: 200, y: 210, size: 140}, eatx: { x: 215, y: 210, size: 160 } },
-        matx: { atx: {x: 205, y: 210, size: 160}, eatx: { x: 220, y: 210, size: 175 } },
-        mitx: { atx: {x: 170, y: 235, size: 190}, eatx: { x: 180, y: 235, size: 210 } },
-        eatx: { atx: {x: 230, y: 210, size: 120}, eatx: { x: 230, y: 210, size: 130 } }
+        atx: { atx: {x: 200, y: 200, size: 140}, eatx: { x: 215, y: 200, size: 160 } },
+        matx: { atx: {x: 205, y: 200, size: 160}, eatx: { x: 220, y: 200, size: 175 } },
+        mitx: { atx: {x: 170, y: 230, size: 190}, eatx: { x: 180, y: 230, size: 210 } },
+        eatx: { atx: {x: 195, y: 235, size: 115}, eatx: { x: 195, y: 235, size: 125 } }
     };
     // Fans position size
     const fansPositionSize = {
