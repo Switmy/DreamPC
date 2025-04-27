@@ -1,6 +1,7 @@
 body {
     font-family: Helvetica;
-    background-color: #222222;
+    background: linear-gradient(to bottom, #ffb300, #9000ff);
+    color: #ffffff;
     margin: 0;
     padding: 0;
     display: flex;
@@ -8,20 +9,6 @@ body {
     align-items: center;
     flex-direction: column;
     height: 100vh; /* Ensure the body covers the full viewport height */
-}
-
-.container {
-    background: linear-gradient(45deg, #000, #6715ff);
-    border-radius: 20px;
-    padding-top: 8%;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.158);
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    position: fixed; /* Fixes the container's position relative to the viewport */
-    overflow: auto; /* Allows scrolling inside the container if content overflows */
-    width: 40%;
-    height: 35%;
 }
 
 h1 {

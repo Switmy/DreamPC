@@ -13,4 +13,16 @@ fieldset {
   margin-bottom: 1%;
   max-width: 70%;
   padding: 20px;
-  }
+}
+
+button {
+  background-color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 5px;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease;
+
+}
