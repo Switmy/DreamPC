@@ -1,0 +1,32 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PNG ADJUST</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='png_adjust.css') }}">
+</head>
+<body>
+<div>
+    <h1>PNG ADJUST</h1>
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <input type="text" name="new_name" id="new_name"><br>  <!--the bug is because there isn't any 'label', but it's chill-->
+        <input type="file" name="images" id="images" multiple accept=".png"><br>
+        <input type="submit" value="BOOOM">
+    </form>
+    <div id="messages">
+        <!-- Messages will be dynamically inserted here -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <ul class="flashes">
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+    <h6>(Only PNG images with transparency accepted)</h6>
+</div>
+<script>
+    
+</script>
+</body>
+</html>

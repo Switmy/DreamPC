@@ -60,6 +60,7 @@ app.get('/api/components/:type/:value', (req, res) => {
                 const response = {
                     ...row,
                     imageUrl: `/images/${row.image}`,
+                    imageUrl2: `/images/${row.image2}`,
                 };
     
                 res.json(response);
