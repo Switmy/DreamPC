@@ -10,6 +10,7 @@ app.use(cors()); // Cors for cross-origin requests
 const db = createDatabase();
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/special_positions', express.static(path.join(__dirname, 'special_positions')));
 
 app.get('/api/components/:type/:value', (req, res) => {
     const { type, value } = req.params;
@@ -38,6 +39,7 @@ app.get('/api/components/:type/:value', (req, res) => {
             }
     
             const imagePath = path.join(__dirname, 'images', row.image);
+            const specialPositionsPath = path.join(__dirname, 'special_positions', row.specialPositions || '');
     
             try {
                 await fs.promises.access(imagePath);
@@ -61,7 +63,9 @@ app.get('/api/components/:type/:value', (req, res) => {
                     ...row,
                     imageUrl: `/images/${row.image}`,
                     imageUrl2: `/images/${row.image2}`,
+                    specialPositionsUrl: `/special_positions/${row.specialPositions}`
                 };
+                console.log(`Returning component data for type=${type} and value=${value}`, response);
     
                 res.json(response);
             } catch (fileErr) {

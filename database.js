@@ -19,6 +19,7 @@ function createDatabase() {
         fancapacity INTEGER,
         aiofanQuantity INTEGER DEFAULT 1,
         aiofan INTEGER,
+        specialPositions TEXT,
         value INTEGER PRIMARY KEY AUTOINCREMENT
         )`);
         // Insertion des données
@@ -31,7 +32,7 @@ function createDatabase() {
             { type: 'case', name: 'mATX Zalman P30 V2', image: '6.png', image2: null, format: "mATX", quantity: 1, rgb: null, casetype: 'aquarium', fancapacity: 6 },
             { type: 'case', name: 'mATX Jonsbo D32 Pro', image: '7.png', image2: null, format: "mATX", quantity: 1, rgb: null, casetype: 'normal', fancapacity: 6 },
             { type: 'case', name: "mATX Jonsbo TK1", image: '8.png', image2: null, format: "mATX", quantity: 1, rgb: null, casetype: null, fancapacity: 4 },
-            { type: 'case', name: 'mITX Fractal Design Torrent Nano', image: '9.png', image2: null, format: "mITX", quantity: 1, rgb: null, casetype: null, fancapacity: 3 },
+            { type: 'case', name: 'mITX Fractal Design Torrent Nano', image: '9.png', image2: null, format: "mITX", quantity: 1, rgb: null, casetype: null, fancapacity: 3, specialPositions: '9.json' },
             { type: 'case', name: 'ATX Corsair ICUE 5000X White', image: '10.png', image2: null, format: "ATX", quantity: 1, rgb: null, casetype: 'normal', fancapacity: 7 },
             { type: 'case', name: 'mITX Cooler-Master Masterbox NR200P White', image: '11.png', image2: null, format: "mITX", quantity: 1, rgb: null, casetype: 'normal', fancapacity: 5 },
             { type: 'case', name: 'EATX Asus Hyperion GR701 White', image: '12.png', image2: null, format: "EATX", quantity: 1, rgb: null, casetype: 'normal', fancapacity: 7 },
@@ -71,10 +72,10 @@ function createDatabase() {
         ];
 
         // Prépare l'insertion des components
-        const stmt = db.prepare(`INSERT INTO components (type, name, image, image2, format, quantity, rgb, casetype, fancapacity, aioFanQuantity, aioFan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const stmt = db.prepare(`INSERT INTO components (type, name, image, image2, format, quantity, rgb, casetype, fancapacity, aioFanQuantity, aioFan, specialPositions) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
         components.forEach(component => {
-            stmt.run(component.type, component.name, component.image, component.image2, component.format, component.quantity, component.rgb, component.casetype, component.fancapacity, component.aioFanQuantity, component.aioFan);
+            stmt.run(component.type, component.name, component.image, component.image2, component.format, component.quantity, component.rgb, component.casetype, component.fancapacity, component.aioFanQuantity, component.aioFan, component.specialPositions);
         });
 
         stmt.finalize();

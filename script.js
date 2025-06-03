@@ -119,26 +119,53 @@ document.getElementById("submit-btn").addEventListener('click', async function (
             console.log("positionSizeMapping:", positionSizeMapping, "format:", format);
             return null;
         }
+        if (!specialPositionsUrl) {
+            console.warn("Special positions URL is not provided.");
+            return null; // Return null if special positions URL is not available
+        }
+
+        const specialPositions = fetch(`http://localhost:3000${specialPositionsUrl}`)
+            .then(res => res.json())
+            .catch(error => {
+                console.error(`Error fetching special positions:`, error);
+                return null; // Return null for failed fetches
+            });
 
         let dimensions = null;
 
-        if (positionSizeMapping === fansPositionSize) {
-            // Special handling for fans
-            if (caseFanCapacity && caseType && fanCounter) {
-                dimensions = positionSizeMapping?.[caseType]?.[caseFanCapacity]?.[fanCounter]?.[caseFormat]?.[format];
+        if (specialPositions[positionSizeMapping]) {
+            if (positionSizeMapping === fansPositionSize) {
+                if (fanCounter) {
+                    dimensions = specialPositions[positionSizeMapping]?.[fanCounter]?.[format];
+                    if (!dimensions) {
+                        console.warn(`Format "${format}" not found in special positions for fan ${fanCounter}.`);
+                    };
+                } else {
+                    console.warn("Fan counter is missing for fans in special positions.");
+                };
+            } else {
+                dimensions = specialPositions[positionSizeMapping]?.[format];
                 if (!dimensions) {
-                    console.warn(`Format "${format}" not found in case mapping for fan ${fanCounter}.`);
+                    console.warn(`Format "${format}" not found in special positions for ${positionSizeMapping}.`);
+                };
+            };
+        } else {
+            if (positionSizeMapping === fansPositionSize) {
+                if (caseFanCapacity && caseType && fanCounter) {
+                    dimensions = positionSizeMapping?.[caseType]?.[caseFanCapacity]?.[fanCounter]?.[caseFormat]?.[format];
+                    if (!dimensions) {
+                        console.warn(`Format "${format}" not found in case mapping for fan ${fanCounter}.`);
+                    }
+                } else {
+                    console.warn("Case fan capacity, case type, or fan counter is missing for fans.");
                 }
             } else {
-                console.warn("Case fan capacity, case type, or fan counter is missing for fans.");
-            }
-        } else {
-            // General case for other components
-            dimensions = positionSizeMapping?.[caseFormat]?.[format];
-            if (!dimensions) {
-                console.warn(`Dimensions not found for caseFormat: "${caseFormat}" and format: "${format}".`);
-            }
-        }
+                // General case for other components
+                dimensions = positionSizeMapping?.[caseFormat]?.[format];
+                if (!dimensions) {
+                    console.warn(`Dimensions not found for caseFormat: "${caseFormat}" and format: "${format}".`);
+                }
+            }};
 
         return dimensions;
     }
@@ -165,6 +192,29 @@ document.getElementById("submit-btn").addEventListener('click', async function (
             return null; // Return null if aio data is not available
         }
     }
+
+    function specialPositions(key, specialPositionsUrl) {
+        if (!specialPositionsUrl) {
+            console.warn("Special positions URL is not provided.");
+            return null; // Return null if special positions URL is not available
+        }
+
+        const specialPositions = fetch(`http://localhost:3000${specialPositionsUrl}`)
+            .then(res => res.json())
+            .catch(error => {
+                console.error(`Error fetching special positions:`, error);
+                return null; // Return null for failed fetches
+            });
+        
+        if (!specialPositions) {
+            if (specialPositions[key]) {
+                return specialPositions[key]; // Return the specific key's special position
+            }
+            else {
+                console.warn(`Special position not found for key: ${key}`);
+                return null; // Return null if the key is not found
+            }
+    }};
 
     // Fetch data for each component type
     const [caseData, gpuData, motherboardData, aioData, aircoolerData] = await Promise.all([
