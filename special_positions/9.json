@@ -1,0 +1,22 @@
+{
+    "gpuPositionSize": {
+        "eatx": {"x": 135, "y": 245, "size": 430},
+        "atx": {"x": 135, "y": 245, "size": 390},
+        "matx": {"x": 135, "y": 300, "size": 290},
+        "mitx": {"x": 135, "y": 300, "size": 270} },
+    "motherboardPositionSize": {
+        "atx": {"x": 160, "y": 190, "size": 230},
+        "matx": {"x": 160, "y": 190, "size": 210},
+        "mitx": {"x": 130, "y": 215, "size": 240},
+        "eatx": {"x": 160, "y": 190, "size": 250} },
+    "aioPositionSize": {
+        "atx": {"x": 220, "y": 275, "size": 100} },
+    "aircoolerPositionSize": {
+        "atx": {"x": 170, "y": 230, "size": 190},
+        "eatx": {"x": 180, "y": 230, "size": 210}},
+    "fansPositionSize": {
+        "1": {"mitx": {"x": 100, "y": 210, "size": 100}},
+        "2": {"mitx": {"x": 100, "y": 210, "size": 100}},
+        "3": {"mitx": {"x": 100, "y": 210, "size": 100}},
+        "4": {"mitx": {"x": 100, "y": 210, "size": 100}} }
+}

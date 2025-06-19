@@ -1,10 +1,15 @@
 // VIZUALIZER JAVASCRIPT
 document.getElementById("submit-btn").addEventListener('click', async function () {
+    console.log("🟢 [START] Submit button clicked!");
+
     const canvas = document.getElementById('configCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+    console.log("🖼️ [CANVAS] Canvas and context initialized:", canvas, ctx);
+
     const response = await fetch('./positionSizeMappings.json');
     const positionSizeMappings = await response.json();
+    console.log("📦 [DATA] positionSizeMappings loaded:", positionSizeMappings);
 
     const gpuPositionSize = positionSizeMappings.gpuPositionSize;
     const motherboardPositionSize = positionSizeMappings.motherboardPositionSize;
@@ -12,20 +17,18 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     const aircoolerPositionSize = positionSizeMappings.aircoolerPositionSize;
     const fansPositionSize = positionSizeMappings.fansPositionSize;
 
-    
     if (!canvas || !ctx) {
-        console.error("Canvas or context is not found.");
+        console.error("❌ [ERROR] Canvas or context is not found.");
         return;
     }
 
     if (!('filter' in ctx)) {
-        console.warn('Canvas filter is not supported in this browser.');
+        console.warn('⚠️ [WARN] Canvas filter is not supported in this browser.');
     }
-
-    //const selectedColor = document.getElementById('favcolor').value;
 
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    console.log("🧹 [CANVAS] Canvas cleared.");
 
     // Group selected components by their type and count occurrences
     const groupedComponents = selectedComponents.reduce((acc, component) => {
@@ -41,9 +44,12 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         acc[key][value] += 1; // Increment count for duplicate components
         return acc;
     }, {});
-    console.log('Grouped Components:', groupedComponents);
+    console.log('📊 [GROUP] Grouped Components:', groupedComponents);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function fetchData(componentType, groupedValues) {
+        console.log(`🌐 [FETCH] Fetching data for ${componentType}:`, groupedValues);
         const fetchPromises = [];
 
         // Handle duplicates only for 'fans'
@@ -54,7 +60,7 @@ document.getElementById("submit-btn").addEventListener('click', async function (
                         fetch(`http://localhost:3000/api/components/${componentType}/${value}`)
                             .then(res => res.json())
                             .catch(error => {
-                                console.error(`Error fetching ${componentType} (${value}):`, error);
+                                console.error(`❌ [ERROR] Fetching ${componentType} (${value}):`, error);
                                 return null; // Return null for failed fetches
                             })
                     );
@@ -67,156 +73,169 @@ document.getElementById("submit-btn").addEventListener('click', async function (
                     fetch(`http://localhost:3000/api/components/${componentType}/${value}`)
                         .then(res => res.json())
                         .catch(error => {
-                            console.error(`Error fetching ${componentType} (${value}):`, error);
+                            console.error(`❌ [ERROR] Fetching ${componentType} (${value}):`, error);
                             return null; // Return null for failed fetches
                         })
                 );
             }
         }
 
-        return Promise.allSettled(fetchPromises).then(results =>
-            results
+        return Promise.allSettled(fetchPromises).then(results => {
+            console.log(`✅ [FETCHED] Results for ${componentType}:`, results);
+            return results
                 .filter(result => result.status === 'fulfilled' && result.value) // Filter out failed fetches
-                .map(result => result.value)
-        );
+                .map(result => result.value);
+        });
+    }
+
+    async function fetchSpecialPositions(caseData) {
+        console.log("🔎 [SPECIAL] Fetching special positions for caseData:", caseData);
+        if (caseData || caseData.length > 0) {
+            const specialPositionsUrl = caseData?.length > 0 ? getData(caseData, 'specialPositionsUrl') : null;
+            const fetchPromises = [];
+            if (specialPositionsUrl !== "/special_positions/null" && specialPositionsUrl) {
+                fetchPromises.push(
+                    fetch(`http://localhost:3000${specialPositionsUrl}`)
+                        .then(res => res.json())
+                        .catch(error => {
+                            console.error("❌ [ERROR] Fetching special positions:", error);
+                            return null; // Return null for failed fetches
+                        })
+                );
+
+                const results = await Promise.allSettled(fetchPromises);
+                console.log("✅ [SPECIAL] Special positions fetched:", results);
+                return results
+                    .filter(result_1 => result_1.status === 'fulfilled' && result_1.value) // Filter out failed fetches
+                    .map(result_2 => result_2.value);
+            } else {
+                console.warn("⚠️ [WARN] Special positions URL is not available in case data.");
+                return Promise.resolve([]); // Return an empty array if special positions URL is not available
+            }
+        } else {
+            console.warn("⚠️ [WARN] Case data is not available for fetching special positions.");
+            return Promise.resolve([]); // Return an empty array if case data is not available
+        }
     }
 
     function drawComponent(imageUrl, xposition, yposition, size, filter, rotation) {
-        console.log(`Drawing component with URL: ${imageUrl}, x: ${xposition}, y: ${yposition}, size: ${size}, filter: ${filter}, rotation: ${rotation}`);
+        console.log(`🎨 [DRAW] Drawing component with URL: ${imageUrl}, x: ${xposition}, y: ${yposition}, size: ${size}, filter: ${filter}, rotation: ${rotation}`);
         return new Promise((resolve) => {
             const image = new Image();
             image.crossOrigin = 'Anonymous';
-    
+
             image.onload = () => {
                 ctx.save();
                 ctx.filter = filter;
-    
+
                 // Move to center of the image for rotation
                 const centerX = xposition + size / 2;
                 const centerY = yposition + size / 2;
                 ctx.translate(centerX, centerY);
                 ctx.rotate(rotation * Math.PI / 180); // Convert degrees to radians
-    
+
                 // Draw the image centered at (0,0) after rotation
                 ctx.drawImage(image, -size / 2, -size / 2, size, size);
-    
+
                 ctx.restore();
+                console.log("✅ [DRAWN] Image drawn:", imageUrl);
                 resolve();
             };
-    
+
             image.onerror = () => {
-                console.warn(`Image not found: ${imageUrl}`);
+                console.warn(`⚠️ [WARN] Image not found: ${imageUrl}`);
                 resolve();
             };
-    
+
             image.src = `http://localhost:3000${imageUrl}`;
         });
-    }    
+    }
 
-    function setDimensions(format, positionSizeMapping, caseFormat, caseFanCapacity = null, caseType = null, fanCounter = null) {
+    function setDimensions(format, positionSizeMapping, specialKey, specialPositions, caseFormat, caseFanCapacity = null, caseType = null, fanCounter = null) {
+        console.log("📏 [DIM] setDimensions called with:", { format, positionSizeMapping, specialKey, specialPositions, caseFormat, caseFanCapacity, caseType, fanCounter });
         if (!positionSizeMapping || !format) {
-            console.warn("Position size mapping or format is missing.");
+            console.warn("⚠️ [WARN] Position size mapping or format is missing.");
             console.log("positionSizeMapping:", positionSizeMapping, "format:", format);
             return null;
         }
-        if (!specialPositionsUrl) {
-            console.warn("Special positions URL is not provided.");
-            return null; // Return null if special positions URL is not available
+
+        if (!specialPositions) {
+            console.warn("⚠️ [WARN] Special positions aren't provided.");
         }
 
-        const specialPositions = fetch(`http://localhost:3000${specialPositionsUrl}`)
-            .then(res => res.json())
-            .catch(error => {
-                console.error(`Error fetching special positions:`, error);
-                return null; // Return null for failed fetches
-            });
+        console.log('🗺️ [DIM] specialPositions in setDimensions:', specialPositions);
 
         let dimensions = null;
 
-        if (specialPositions[positionSizeMapping]) {
+        if (specialPositions && specialPositions[specialKey]) {
             if (positionSizeMapping === fansPositionSize) {
                 if (fanCounter) {
-                    dimensions = specialPositions[positionSizeMapping]?.[fanCounter]?.[format];
+                    dimensions = specialPositions[specialKey]?.[fanCounter]?.[format];
                     if (!dimensions) {
-                        console.warn(`Format "${format}" not found in special positions for fan ${fanCounter}.`);
-                    };
+                        console.warn(`⚠️ [WARN] Format "${format}" not found in special positions for fan ${fanCounter}.`);
+                    }
                 } else {
-                    console.warn("Fan counter is missing for fans in special positions.");
-                };
+                    console.warn("⚠️ [WARN] Fan counter is missing for fans in special positions.");
+                }
             } else {
-                dimensions = specialPositions[positionSizeMapping]?.[format];
+                dimensions = specialPositions[specialKey]?.[format];
                 if (!dimensions) {
-                    console.warn(`Format "${format}" not found in special positions for ${positionSizeMapping}.`);
-                };
-            };
+                    console.warn(`⚠️ [WARN] Format "${format}" not found in special positions for ${positionSizeMapping}.`);
+                }
+            }
         } else {
             if (positionSizeMapping === fansPositionSize) {
                 if (caseFanCapacity && caseType && fanCounter) {
                     dimensions = positionSizeMapping?.[caseType]?.[caseFanCapacity]?.[fanCounter]?.[caseFormat]?.[format];
                     if (!dimensions) {
-                        console.warn(`Format "${format}" not found in case mapping for fan ${fanCounter}.`);
+                        console.warn(`⚠️ [WARN] Format "${format}" not found in case mapping for fan ${fanCounter}.`);
                     }
                 } else {
-                    console.warn("Case fan capacity, case type, or fan counter is missing for fans.");
+                    console.warn("⚠️ [WARN] Case fan capacity, case type, or fan counter is missing for fans.");
                 }
             } else {
                 // General case for other components
                 dimensions = positionSizeMapping?.[caseFormat]?.[format];
                 if (!dimensions) {
-                    console.warn(`Dimensions not found for caseFormat: "${caseFormat}" and format: "${format}".`);
+                    console.warn(`⚠️ [WARN] Dimensions not found for caseFormat: "${caseFormat}" and format: "${format}".`);
                 }
-            }};
+            }
+        }
 
+        console.log(`📐 [DIM] Dimensions for ${positionSizeMapping} with format "${format}":`, dimensions);
         return dimensions;
     }
 
     function getData(data, key) {
+        console.log("🔑 [DATA] getData called with:", data, key);
         if (Array.isArray(data) && data.length > 0) {
             return data[0][key]; // Access the key from the first object in the array
         }
         return null; // Return null if the array is empty or invalid
     }
-    
+
     function aiofans(aioFanQuantity, aioFan, groupedComponents) {
+        console.log("🌀 [AIO] aiofans called with:", { aioFanQuantity, aioFan, groupedComponents });
         if (aioData && aioData.length > 0) { // Check if aioData is valid
-            if( aioFanQuantity && aioFan) {
+            if (aioFanQuantity && aioFan) {
                 if (!groupedComponents.fans) {
                     groupedComponents.fans = {};
-                }   
+                }
                 groupedComponents.fans[aioFan] = (groupedComponents.fans[aioFan] || 0) + aioFanQuantity;
-            } else { 
-                console.warn("AIO fan quantity or AIO fan is missing.");
+                console.log("➕ [AIO] Added AIO fans to groupedComponents:", groupedComponents.fans);
+            } else {
+                console.warn("⚠️ [WARN] AIO fan quantity or AIO fan is missing.");
             }
         } else {
-            console.warn("AIO data is not available.");
+            console.warn("⚠️ [WARN] AIO data is not available.");
             return null; // Return null if aio data is not available
         }
     }
 
-    function specialPositions(key, specialPositionsUrl) {
-        if (!specialPositionsUrl) {
-            console.warn("Special positions URL is not provided.");
-            return null; // Return null if special positions URL is not available
-        }
-
-        const specialPositions = fetch(`http://localhost:3000${specialPositionsUrl}`)
-            .then(res => res.json())
-            .catch(error => {
-                console.error(`Error fetching special positions:`, error);
-                return null; // Return null for failed fetches
-            });
-        
-        if (!specialPositions) {
-            if (specialPositions[key]) {
-                return specialPositions[key]; // Return the specific key's special position
-            }
-            else {
-                console.warn(`Special position not found for key: ${key}`);
-                return null; // Return null if the key is not found
-            }
-    }};
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Fetch data for each component type
+    console.log("🚚 [FETCH] Fetching all component data...");
     const [caseData, gpuData, motherboardData, aioData, aircoolerData] = await Promise.all([
         fetchData('case', groupedComponents['case'] || {}),
         fetchData('gpu', groupedComponents['gpu'] || {}),
@@ -224,23 +243,24 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         fetchData('aio', groupedComponents['aio'] || {}),
         fetchData('aircooler', groupedComponents['aircooler'] || {}),
     ]);
+    console.log("📦 [FETCHED] All main component data:", { caseData, gpuData, motherboardData, aioData, aircoolerData });
 
-    const aioFanQuantity = getData(aioData, 'aiofanQuantity'); 
+    const aioFanQuantity = getData(aioData, 'aiofanQuantity');
     const aioFan = getData(aioData, 'aiofan');
-    console.log('aioData:', aioData);
+    console.log('🌀 [AIO] aioData:', aioData);
     aiofans(aioFanQuantity, aioFan, groupedComponents); // adds AIO fans
-
+    
     // Fetch data for fans after aiofans is called
     const fansData = await fetchData('fans', groupedComponents['fans'] || {});
-    console.log('fansData:', fansData);
+    console.log('🧊 [FANS] fansData:', fansData);
 
     let fanQuantities = []; // Initialize fanQuantities array
     if (fansData.length > 0) {
         fanQuantities = fansData.map((fan) => fan?.quantity ? fan.quantity : null);
     }
-    console.log('fanQuantities:', fanQuantities);
+    console.log('🔢 [FANS] fanQuantities:', fanQuantities);
 
-    // Set dimensions for each component
+    // format for each component
     const caseFormat = caseData?.length > 0 ? getData(caseData, 'format').toLowerCase() : null;
     const gpuFormat = gpuData?.length > 0 ? getData(gpuData, 'format').toLowerCase() : null;
     const motherboardFormat = motherboardData?.length > 0 ? getData(motherboardData, 'format').toLowerCase() : null;
@@ -250,21 +270,27 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     if (fansData.length > 0) {
         fanFormats = fansData.map((fan) => fan?.format ? fan.format.toLowerCase() : null);
     }
-    console.log('fanFormats:', fanFormats);
+    console.log('🔤 [FANS] fanFormats:', fanFormats);
 
     // Get the fan-cacacity ;) and case type from the case data
     const caseFanCapacity = caseData?.length > 0 ? getData(caseData, 'fancapacity') : null;
     const caseType = caseData?.length > 0 ? getData(caseData, 'casetype') : null;
-    console.log('caseFanCapacity:', caseFanCapacity, ', caseType:', caseType);
+    console.log('🏠 [CASE] caseFanCapacity:', caseFanCapacity, ', caseType:', caseType);
 
-    const gpuDimensions = gpuFormat ? setDimensions(gpuFormat, gpuPositionSize, caseFormat) : null;
-    const motherboardDimensions = motherboardFormat ? setDimensions(motherboardFormat, motherboardPositionSize, caseFormat) : null;
-    const aioDimensions = aioFormat ? setDimensions(aioFormat, aioPositionSize, caseFormat) : null;
-    const aircoolerDimensions = aircoolerFormat ? setDimensions(aircoolerFormat, aircoolerPositionSize, caseFormat) : null;
-    const fansDimensions = fanFormats.map((fanFormat) => {
-        return fanFormat ? setDimensions(fanFormat, fansPositionSize, caseFormat, caseFanCapacity, caseType) : null;
-    });
-    console.log('fansDimensions:', fansDimensions);
+    const specialPositions = (await fetchSpecialPositions(caseData))[0];
+    console.log('🌟 [SPECIAL] Original specialPositions:', specialPositions);
+
+    const specialgpu = "gpuPositionSize";
+    const specialmotherboard = "motherboardPositionSize";
+    const specialaio = "aioPositionSize";
+    const specialaircooler = "aircoolerPositionSize";
+    const specialfans = "fansPositionSize";
+
+    // diemensions for each component
+    const gpuDimensions = gpuFormat ? setDimensions(gpuFormat, gpuPositionSize, specialgpu, specialPositions, caseFormat) : null;
+    const motherboardDimensions = motherboardFormat ? setDimensions(motherboardFormat, motherboardPositionSize, specialmotherboard, specialPositions, caseFormat) : null;
+    const aioDimensions = aioFormat ? setDimensions(aioFormat, aioPositionSize, specialaio, specialPositions, caseFormat) : null;
+    const aircoolerDimensions = aircoolerFormat ? setDimensions(aircoolerFormat, aircoolerPositionSize, specialaircooler, specialPositions, caseFormat) : null;
 
     // Draw components sequentially
     const componentsToDraw = [
@@ -273,6 +299,7 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         { dimensions: aircoolerDimensions, data: aircoolerData, key: 'aircooler', filter: 'none', rotation: 0 },
         { dimensions: aioDimensions, data: aioData, key: 'aio', filter: 'none', rotation: 0 },
     ];
+    console.log('📝 [DRAW] motherboardDimensions:', motherboardDimensions);
 
     let fanCounter = 1; // Global counter for fan numbering
 
@@ -284,7 +311,7 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         if (fanFormat && fanData) {
             for (let i = 0; i < fanQuantity && i < caseFanCapacity; i++) {
                 // Calculate dimensions for each fan based on fanCounter
-                const fanDimension = setDimensions(fanFormat, fansPositionSize, caseFormat, caseFanCapacity, caseType, fanCounter // Pass fanCounter to determine unique placement
+                const fanDimension = setDimensions(fanFormat, fansPositionSize, specialfans, specialPositions, caseFormat, caseFanCapacity, caseType, fanCounter // Pass fanCounter to determine unique placement
                 );
 
                 if (fanDimension) {
@@ -295,24 +322,25 @@ document.getElementById("submit-btn").addEventListener('click', async function (
                         filter: 'brightness(0.6)',
                         rotation: fanDimension.rotation || 0, // Use rotation from fanData if available
                     });
+                    console.log(`🧊 [FAN] Added fan${fanCounter} to componentsToDraw:`, fanDimension);
                     fanCounter++; // Increment the global counter
                 }
                 else {
-                    console.warn(`Fan dimensions not found for format: "${fanFormat}"`);
+                    console.warn(`⚠️ [WARN] Fan dimensions not found for format: "${fanFormat}", so it won't be added to [componentsToDraw].`);
                 }
             }
         }
     });
 
-    console.log('componentsToDraw:', componentsToDraw);
+    console.log('🗂️ [DRAW] componentsToDraw:', componentsToDraw);
     // add gpu last to be on top of the fans
     componentsToDraw.push({ dimensions: gpuDimensions, data: gpuData, key: 'gpu', filter: 'none' });
 
     // Wait for all components to be drawn
     for (const component of componentsToDraw) {
         const verticalGPU = document.getElementById('vertical-gpu').checked ? "yes" : "no";
-            console.log('verticalGPU:', verticalGPU); 
-        
+        console.log('🧲 [GPU] verticalGPU:', verticalGPU);
+
         let imageUrl = ''; // Initialize imageUrl with a default value
 
         if (component.data) { // Ensure component.data exists
@@ -336,7 +364,7 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         }
 
         if (!imageUrl) {
-            console.warn(`No valid imageUrl found for component: ${component.key}`);
+            console.warn(`⚠️ [WARN] No valid imageUrl found for component: ${component.key}`);
         }
 
         if (component.dimensions && (Array.isArray(component.data) ? component.data.length > 0 : component.data)) {
@@ -350,22 +378,25 @@ document.getElementById("submit-btn").addEventListener('click', async function (
             );
         }
     }
+    console.log("🏁 [END] Drawing complete!");
 });
 
-// PAGE'S JAVASCRIPT
+// PAGE'S JAVASCRIPT ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const selectedComponents = [];
 
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
+        console.log("☑️ [CHECKBOX] Checkbox changed:", checkbox);
         if (checkbox.checked) {
             // Check if the checkbox is "verticalgpu"
             if (checkbox.id === "vertical-gpu") {
                 // Custom behavior for "verticalgpu" (if needed)
-                console.log('Vertical GPU checkbox selected');
+                console.log('🧲 [GPU] Vertical GPU checkbox selected');
                 return; // Skip the reset logic for this checkbox
             }
 
             selectedComponents.push({ name: checkbox.name, value: checkbox.value });
+            console.log("➕ [SELECT] Added to selectedComponents:", selectedComponents);
 
             const selectedList = document.getElementById('selected-components-list');
             const listItem = document.createElement('li');

@@ -65,7 +65,6 @@ app.get('/api/components/:type/:value', (req, res) => {
                     imageUrl2: `/images/${row.image2}`,
                     specialPositionsUrl: `/special_positions/${row.specialPositions}`
                 };
-                console.log(`Returning component data for type=${type} and value=${value}`, response);
     
                 res.json(response);
             } catch (fileErr) {
