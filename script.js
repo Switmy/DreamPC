@@ -1,15 +1,20 @@
 // VIZUALIZER JAVASCRIPT
-document.getElementById("submit-btn").addEventListener('click', async function () {
-    console.log("🟢 [START] Submit button clicked!");
+
+const selectedComponents = [];
+
+async function drawVisualization() {
+    console.log("🟢 [START] Drawing visualization...");
 
     const canvas = document.getElementById('configCanvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-    console.log("🖼️ [CANVAS] Canvas and context initialized:", canvas, ctx);
+    if (!canvas || !ctx) {
+        console.error("❌ [ERROR] Canvas or context is not found.");
+        return;
+    }
 
     const response = await fetch('./positionSizeMappings.json');
     const positionSizeMappings = await response.json();
-    console.log("📦 [DATA] positionSizeMappings loaded:", positionSizeMappings);
 
     const gpuPositionSize = positionSizeMappings.gpuPositionSize;
     const motherboardPositionSize = positionSizeMappings.motherboardPositionSize;
@@ -17,31 +22,15 @@ document.getElementById("submit-btn").addEventListener('click', async function (
     const aircoolerPositionSize = positionSizeMappings.aircoolerPositionSize;
     const fansPositionSize = positionSizeMappings.fansPositionSize;
 
-    if (!canvas || !ctx) {
-        console.error("❌ [ERROR] Canvas or context is not found.");
-        return;
-    }
-
-    if (!('filter' in ctx)) {
-        console.warn('⚠️ [WARN] Canvas filter is not supported in this browser.');
-    }
-
-    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log("🧹 [CANVAS] Canvas cleared.");
 
     // Group selected components by their type and count occurrences
     const groupedComponents = selectedComponents.reduce((acc, component) => {
         const key = component.name;
         const value = component.value.toLowerCase().replace(/ /g, '-');
-
-        if (!acc[key]) {
-            acc[key] = {};
-        }
-        if (!acc[key][value]) {
-            acc[key][value] = 0;
-        }
-        acc[key][value] += 1; // Increment count for duplicate components
+        if (!acc[key]) acc[key] = {};
+        if (!acc[key][value]) acc[key][value] = 0;
+        acc[key][value] += 1;
         return acc;
     }, {});
     console.log('📊 [GROUP] Grouped Components:', groupedComponents);
@@ -379,24 +368,29 @@ document.getElementById("submit-btn").addEventListener('click', async function (
         }
     }
     console.log("🏁 [END] Drawing complete!");
-});
+}
 
 // PAGE'S JAVASCRIPT ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const selectedComponents = [];
 
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
+    checkbox.addEventListener('change', async () => {
         console.log("☑️ [CHECKBOX] Checkbox changed:", checkbox);
         if (checkbox.checked) {
             // Check if the checkbox is "verticalgpu"
             if (checkbox.id === "vertical-gpu") {
-                // Custom behavior for "verticalgpu" (if needed)
                 console.log('🧲 [GPU] Vertical GPU checkbox selected');
-                return; // Skip the reset logic for this checkbox
+                return;
             }
 
-            selectedComponents.push({ name: checkbox.name, value: checkbox.value });
-            console.log("➕ [SELECT] Added to selectedComponents:", selectedComponents);
+            // Check if the component is "fans" or not already selected
+            if (checkbox.name === "fans" || !selectedComponents.some(comp => comp.name === checkbox.name)) {
+                selectedComponents.push({ name: checkbox.name, value: checkbox.value });
+                console.log("➕ [SELECT] Added to selectedComponents:", selectedComponents);
+
+            } else {
+                console.warn("⚠️ [WARN] Component already selected:", checkbox.name);
+                return; // Prevent adding duplicates
+            }
 
             const selectedList = document.getElementById('selected-components-list');
             const listItem = document.createElement('li');
@@ -405,6 +399,28 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
 
             // Reset the checkbox immediately
             checkbox.checked = false;
+
+            const caseSelected = selectedComponents.some(
+                comp => comp.name === "case"
+            );
+            if (caseSelected) {
+                await drawVisualization();
+            }
         }
     });
+});
+
+document.getElementById('reset-button').addEventListener('click', () => {
+    console.log("🔄 [RESET] Resetting visualization...");
+
+    selectedComponents.length = 0; // Clear the selected components array
+    const canvas = document.getElementById('configCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+    // clear the selected components list in the UI
+    const selectedList = document.getElementById('selected-components-list');
+    if (selectedList) {
+        selectedList.innerHTML = '';
+    }
 });
