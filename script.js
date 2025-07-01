@@ -1,5 +1,3 @@
-// VIZUALIZER JAVASCRIPT
-
 const selectedComponents = [];
 
 async function drawVisualization() {
@@ -221,6 +219,32 @@ async function drawVisualization() {
         }
     }
 
+    function applyRGB(color, gpuDimensions, aioDimensions, fansDimensions, rgbcomponents) {
+        if (!color || !rgbcomponents) {
+            console.warn("⚠️ [WARN] Missing crucial (color / rgbcompo.) parameters for applyRGB.");
+            return;
+        }
+        console.log("🌈 [RGB] applyRGB called with:", { color, gpuDimensions, aioDimensions, fansDimensions, rgbcomponents });
+
+        if (rgbcomponents.gpurgb && gpuDimensions) {
+            console.log("🎨 [GPU RGB] Applying GPU RGB");
+            ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
+            ctx.fillRect(gpuDimensions.x, gpuDimensions.y, gpuDimensions.size, gpuDimensions.size);
+        }
+        if (rgbcomponents.aiorgb && aioDimensions) {
+            console.log("🎨 [AIO RGB] Applying AIO RGB");
+            ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
+            ctx.fillRect(aioDimensions.x, aioDimensions.y, aioDimensions.size, aioDimensions.size);
+        }
+        if (rgbcomponents.fanrgb && fansDimensions && fansDimensions.length > 0) {
+            console.log("🎨 [FANS RGB] Applying Fans RGB");
+            fansDimensions.forEach((fanDimension) => {
+                ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
+                ctx.fillRect(fanDimension.x, fanDimension.y, fanDimension.size, fanDimension.size);
+            });
+        }
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Fetch data for each component type
@@ -325,6 +349,82 @@ async function drawVisualization() {
     // add gpu last to be on top of the fans
     componentsToDraw.push({ dimensions: gpuDimensions, data: gpuData, key: 'gpu', filter: 'none' });
 
+
+    // Update this selector to use the new radio button group
+    const colorInputs = document.querySelectorAll('input[name="rgbcolor"]');
+        colorInputs.forEach(input => {
+        input.addEventListener("change", handleColorChange);
+        });
+    function handleColorChange() {
+        // Get the checked radio button value
+        const checkedInput = document.querySelector('input[name="rgbcolor"]:checked');
+        let colorHex = "#ffffff"; // Default to white
+        if (checkedInput) {
+            switch (checkedInput.value) {
+                case "red":
+                    colorHex = "#ff0033";
+                    break;
+                case "green":
+                    colorHex = "#00ff66";
+                    break;
+                case "blue":
+                    colorHex = "#00ffff";
+                    break;
+                case "purple":
+                    colorHex = "#9933ff";
+                    break;
+                case "white":
+                    colorHex = "#ffffff";
+                    break;
+                case "orange":
+                    colorHex = "#ff6600";
+                    break;
+                case "pink":
+                    colorHex = "#ff66cc";
+                    break;
+            }
+        }
+
+        // Convert hex to RGB object for applyRGB
+        function hexToRgb(hex) {
+            hex = hex.replace(/^#/, "");
+            if (hex.length === 3) {
+                hex = hex.split("").map(x => x + x).join("");
+            }
+            const num = parseInt(hex, 16);
+            return {
+                red: (num >> 16) & 255,
+                green: (num >> 8) & 255,
+                blue: num & 255
+            };
+        }
+        const color = hexToRgb(colorHex);
+
+        let fanrgb = null, gpurgb = null, aiorgb = null;
+        if (fansData.length > 0) {
+            fanrgb = fansData.map((fan) => fan?.rgb ? fan.rgb : null);
+        }
+        if (gpuData.length > 0) {
+            gpurgb = getData(gpuData, 'rgb') || null;
+        }
+        if (aioData.length > 0) {
+            aiorgb = getData(aioData, 'rgb') || null;
+        }
+
+        // Get all fan positions!
+        const fanComponents = componentsToDraw.filter(c => c.key && c.key.startsWith('fan'));
+        const fansDimensions = fanComponents.map(fan => fan.dimensions);
+
+        // Use an object for rgbcomponents to match applyRGB logic
+        const rgbcomponents = { fanrgb, gpurgb, aiorgb };
+        console.log('🌈 [RGB] rgbcomponents:', rgbcomponents);
+        console.log('🎨 [RGB] Applying color:', color);
+
+        applyRGB(color, gpuDimensions || [], aioDimensions || [], fansDimensions || [], rgbcomponents || []);
+    }
+    handleColorChange(); // Call the function to apply the initial color
+
+
     // Wait for all components to be drawn
     for (const component of componentsToDraw) {
         const verticalGPU = document.getElementById('vertical-gpu').checked ? "yes" : "no";
@@ -370,7 +470,7 @@ async function drawVisualization() {
     console.log("🏁 [END] Drawing complete!");
 }
 
-// PAGE'S JAVASCRIPT ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', async () => {
