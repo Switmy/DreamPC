@@ -239,8 +239,26 @@ async function drawVisualization() {
         if (rgbcomponents.fanrgb && fansDimensions && fansDimensions.length > 0) {
             console.log("🎨 [FANS RGB] Applying Fans RGB");
             fansDimensions.forEach((fanDimension) => {
-                ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
-                ctx.fillRect(fanDimension.x, fanDimension.y, fanDimension.size, fanDimension.size);
+                // Draw a diffused, round glow in front of each fan
+                const centerX = fanDimension.x + fanDimension.size / 2;
+                const centerY = fanDimension.y + fanDimension.size / 2;
+                const radius = fanDimension.size * 0.6; // Glow radius (adjust as needed)
+                const gradient = ctx.createRadialGradient(
+                    centerX, centerY, radius * 0.2, // inner circle
+                    centerX, centerY, radius        // outer circle
+                );
+                gradient.addColorStop(0, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.3)`);
+                gradient.addColorStop(0.7, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.05)`);
+                gradient.addColorStop(1, `rgba(${color.red}, ${color.green}, ${color.blue}, 0)`);
+
+                ctx.save();
+                ctx.globalCompositeOperation = "lighter"; // Makes the glow effect more pronounced
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.closePath();
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                ctx.restore();
             });
         }
     }
@@ -356,74 +374,99 @@ async function drawVisualization() {
         input.addEventListener("change", handleColorChange);
         });
     function handleColorChange() {
-        // Get the checked radio button value
-        const checkedInput = document.querySelector('input[name="rgbcolor"]:checked');
-        let colorHex = "#ffffff"; // Default to white
-        if (checkedInput) {
-            switch (checkedInput.value) {
-                case "red":
-                    colorHex = "#ff0033";
-                    break;
-                case "green":
-                    colorHex = "#00ff66";
-                    break;
-                case "blue":
-                    colorHex = "#00ffff";
-                    break;
-                case "purple":
-                    colorHex = "#9933ff";
-                    break;
-                case "white":
-                    colorHex = "#ffffff";
-                    break;
-                case "orange":
-                    colorHex = "#ff6600";
-                    break;
-                case "pink":
-                    colorHex = "#ff66cc";
-                    break;
-            }
-        }
+    // Get the checked radio button value
+    const checkedInput = document.querySelector('input[name="rgbcolor"]:checked');
+    console.log("🎛️ [RGB] handleColorChange triggered. Checked input:", checkedInput ? checkedInput.value : null);
 
-        // Convert hex to RGB object for applyRGB
-        function hexToRgb(hex) {
-            hex = hex.replace(/^#/, "");
-            if (hex.length === 3) {
-                hex = hex.split("").map(x => x + x).join("");
-            }
-            const num = parseInt(hex, 16);
-            return {
-                red: (num >> 16) & 255,
-                green: (num >> 8) & 255,
-                blue: num & 255
-            };
-        }
-        const color = hexToRgb(colorHex);
-
-        let fanrgb = null, gpurgb = null, aiorgb = null;
-        if (fansData.length > 0) {
-            fanrgb = fansData.map((fan) => fan?.rgb ? fan.rgb : null);
-        }
-        if (gpuData.length > 0) {
-            gpurgb = getData(gpuData, 'rgb') || null;
-        }
-        if (aioData.length > 0) {
-            aiorgb = getData(aioData, 'rgb') || null;
-        }
-
-        // Get all fan positions!
-        const fanComponents = componentsToDraw.filter(c => c.key && c.key.startsWith('fan'));
-        const fansDimensions = fanComponents.map(fan => fan.dimensions);
-
-        // Use an object for rgbcomponents to match applyRGB logic
-        const rgbcomponents = { fanrgb, gpurgb, aiorgb };
-        console.log('🌈 [RGB] rgbcomponents:', rgbcomponents);
-        console.log('🎨 [RGB] Applying color:', color);
-
-        applyRGB(color, gpuDimensions || [], aioDimensions || [], fansDimensions || [], rgbcomponents || []);
+    if (!checkedInput) {
+        console.warn("⚠️ [RGB] No color selected. Skipping RGB glow.");
+        return;
     }
-    handleColorChange(); // Call the function to apply the initial color
 
+    let colorHex;
+    switch (checkedInput.value) {
+        case "red":
+            colorHex = "#ff0033";
+            break;
+        case "green":
+            colorHex = "#00ff66";
+            break;
+        case "blue":
+            colorHex = "#00ffff";
+            break;
+        case "purple":
+            colorHex = "#9933ff";
+            break;
+        case "white":
+            colorHex = "#ffffff";
+            break;
+        case "orange":
+            colorHex = "#ff6600";
+            break;
+        case "pink":
+            colorHex = "#ff66cc";
+            break;
+        default:
+            colorHex = "#ffffff";
+            console.warn("⚠️ [RGB] Unknown color selected, defaulting to white.");
+    }
+    console.log("🎨 [RGB] Selected color hex:", colorHex);
+
+    // Convert hex to RGB object for applyRGB
+    function hexToRgb(hex) {
+        hex = hex.replace(/^#/, "");
+        if (hex.length === 3) {
+            hex = hex.split("").map(x => x + x).join("");
+        }
+        const num = parseInt(hex, 16);
+        return {
+            red: (num >> 16) & 255,
+            green: (num >> 8) & 255,
+            blue: num & 255
+        };
+    }
+    const color = hexToRgb(colorHex);
+    console.log("🟢 [RGB] Converted color object:", color);
+
+    let fanrgb = null, gpurgb = null, aiorgb = null;
+    if (fansData.length > 0) {
+        fanrgb = fansData.map((fan) => fan?.rgb ? fan.rgb : null);
+        console.log("🔎 [RGB] fanrgb array:", fanrgb);
+    }
+    if (gpuData.length > 0) {
+        gpurgb = getData(gpuData, 'rgb') || null;
+        console.log("🔎 [RGB] gpurgb:", gpurgb);
+    }
+    if (aioData.length > 0) {
+        aiorgb = getData(aioData, 'rgb') || null;
+        console.log("🔎 [RGB] aiorgb:", aiorgb);
+    }
+
+    // Get all fan positions!
+    const fanComponents = componentsToDraw.filter(c => c.key && c.key.startsWith('fan'));
+    const fansDimensions = fanComponents.map(fan => fan.dimensions);
+    console.log("📏 [RGB] fansDimensions:", fansDimensions);
+
+    // Use an object for rgbcomponents to match applyRGB logic
+    const rgbcomponents = {};
+    if (fanrgb && fanrgb.some(r => r !== null)) {
+        rgbcomponents.fanrgb = fanrgb.filter(r => r !== null);
+        console.log("✅ [RGB] fanrgb added to rgbcomponents:", rgbcomponents.fanrgb);
+    }
+    if (gpurgb !== null) {
+        rgbcomponents.gpurgb = gpurgb;
+        console.log("✅ [RGB] gpurgb added to rgbcomponents:", gpurgb);
+    }
+    if (aiorgb !== null) {
+        rgbcomponents.aiorgb = aiorgb;
+        console.log("✅ [RGB] aiorgb added to rgbcomponents:", aiorgb);
+    }
+
+    console.log('🌈 [RGB] Final rgbcomponents object:', rgbcomponents);
+    console.log('🎨 [RGB] Applying color:', color);
+
+    applyRGB(color, gpuDimensions || [], aioDimensions || [], fansDimensions || [], rgbcomponents);
+}
 
     // Wait for all components to be drawn
     for (const component of componentsToDraw) {
@@ -467,11 +510,15 @@ async function drawVisualization() {
             );
         }
     }
+    // it's here so the RGB glow is drawn on top of everything
+    handleColorChange();
+
     console.log("🏁 [END] Drawing complete!");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Checkbox listeners for component selection
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', async () => {
         console.log("☑️ [CHECKBOX] Checkbox changed:", checkbox);
@@ -486,12 +533,12 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             if (checkbox.name === "fans" || !selectedComponents.some(comp => comp.name === checkbox.name)) {
                 selectedComponents.push({ name: checkbox.name, value: checkbox.value });
                 console.log("➕ [SELECT] Added to selectedComponents:", selectedComponents);
-
             } else {
                 console.warn("⚠️ [WARN] Component already selected:", checkbox.name);
                 return; // Prevent adding duplicates
             }
 
+            // Update UI
             const selectedList = document.getElementById('selected-components-list');
             const listItem = document.createElement('li');
             listItem.textContent = `${checkbox.name.toUpperCase()}: ${checkbox.value}`;
@@ -500,9 +547,8 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             // Reset the checkbox immediately
             checkbox.checked = false;
 
-            const caseSelected = selectedComponents.some(
-                comp => comp.name === "case"
-            );
+            // Redraw if a case is selected
+            const caseSelected = selectedComponents.some(comp => comp.name === "case");
             if (caseSelected) {
                 await drawVisualization();
             }
@@ -510,6 +556,7 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     });
 });
 
+// Reset button listener
 document.getElementById('reset-button').addEventListener('click', () => {
     console.log("🔄 [RESET] Resetting visualization...");
 
@@ -518,9 +565,20 @@ document.getElementById('reset-button').addEventListener('click', () => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 
-    // clear the selected components list in the UI
+    // Clear the selected components list in the UI
     const selectedList = document.getElementById('selected-components-list');
     if (selectedList) {
         selectedList.innerHTML = '';
     }
+});
+
+// Color radio button listeners for RGB glow
+document.querySelectorAll('input[name="rgbcolor"]').forEach(input => {
+    input.addEventListener('change', async () => {
+        // Only redraw if a case is selected (to avoid errors)
+        const caseSelected = selectedComponents.some(comp => comp.name === "case");
+        if (caseSelected) {
+            await drawVisualization();
+        }
+    });
 });
