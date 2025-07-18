@@ -1,13 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const { createDatabase } = require('./database');
 const path = require('path');
 const fs = require('fs');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./components-db.sqlite');
 
 const app = express();
 app.use(cors()); // Cors for cross-origin requests
-
-const db = createDatabase();
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/special_positions', express.static(path.join(__dirname, 'special_positions')));

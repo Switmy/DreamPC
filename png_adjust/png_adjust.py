@@ -10,7 +10,7 @@ app.secret_key = 'supersecretkey'
 import cv2
 import numpy as np
 
-def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost=1.3):
+def center_and_fill_image(image, frame_size, black_and_white=True, brightness_boost=1.2):
     frame_width, frame_height = frame_size
 
     has_alpha = image.shape[2] == 4  # Check if image has transparency

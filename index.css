@@ -1,7 +1,8 @@
 body {
-    background-color: rgb(34, 34, 34);
+    background-color: #171717;
     color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter';
+    font-weight: 700;
     align-items: center;
     justify-content: center;
   }
@@ -13,6 +14,7 @@ fieldset {
   margin-bottom: 1%;
   max-width: 70%;
   padding: 20px;
+  font-weight: 400;
 }
 
 button {

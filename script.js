@@ -11,8 +11,9 @@ async function drawVisualization() {
         return;
     }
 
-    const response = await fetch('./positionSizeMappings.json');
+    const response = await fetch(`./positionSizeMappings.json?v=${Date.now()}`);
     const positionSizeMappings = await response.json();
+    console.log("📦 [MAPPINGS] Position size mappings loaded:", positionSizeMappings);
 
     const gpuPositionSize = positionSizeMappings.gpuPositionSize;
     const motherboardPositionSize = positionSizeMappings.motherboardPositionSize;
@@ -119,7 +120,8 @@ async function drawVisualization() {
                 const centerX = xposition + size / 2;
                 const centerY = yposition + size / 2;
                 ctx.translate(centerX, centerY);
-                ctx.rotate(rotation * Math.PI / 180); // Convert degrees to radians
+                ctx.rotate((rotation * Math.PI) / 180); // Convert degrees to radians
+                console.log(`🔄 [ROTATE] Rotating image by ${rotation} degrees at (${centerX}, ${centerY})`);
 
                 // Draw the image centered at (0,0) after rotation
                 ctx.drawImage(image, -size / 2, -size / 2, size, size);
@@ -219,42 +221,68 @@ async function drawVisualization() {
         }
     }
 
-    function applyRGB(color, gpuDimensions, aioDimensions, fansDimensions, rgbcomponents) {
+    function applyRGB(color, aioDimensions, fansDimensions, rgbcomponents) {
         if (!color || !rgbcomponents) {
             console.warn("⚠️ [WARN] Missing crucial (color / rgbcompo.) parameters for applyRGB.");
             return;
         }
-        console.log("🌈 [RGB] applyRGB called with:", { color, gpuDimensions, aioDimensions, fansDimensions, rgbcomponents });
+        console.log("🌈 [RGB] applyRGB called with:", { color, aioDimensions, fansDimensions, rgbcomponents });
 
-        if (rgbcomponents.gpurgb && gpuDimensions) {
-            console.log("🎨 [GPU RGB] Applying GPU RGB");
-            ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
-            ctx.fillRect(gpuDimensions.x, gpuDimensions.y, gpuDimensions.size, gpuDimensions.size);
-        }
         if (rgbcomponents.aiorgb && aioDimensions) {
             console.log("🎨 [AIO RGB] Applying AIO RGB");
-            ctx.fillStyle = `rgba(${color.red}, ${color.green}, ${color.blue}, 0.5)`;
-            ctx.fillRect(aioDimensions.x, aioDimensions.y, aioDimensions.size, aioDimensions.size);
-        }
+            const centerX = aioDimensions.x + aioDimensions.size / 2;
+            const centerY = aioDimensions.y + aioDimensions.size / 2;
+            const radius = aioDimensions.size * 0.7; // Glow radius (adjust as needed)
+            const gradient = ctx.createRadialGradient(
+                centerX, centerY, radius * 0.2, // inner circle
+                centerX, centerY, radius        // outer circle
+            );
+            gradient.addColorStop(0, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.3)`);
+            gradient.addColorStop(0.7, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.05)`);
+            gradient.addColorStop(1, `rgba(${color.red}, ${color.green}, ${color.blue}, 0)`);
+
+            ctx.save();
+            ctx.globalCompositeOperation = "lighter"; // Makes the glow effect more pronounced
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.restore();
+        } 
         if (rgbcomponents.fanrgb && fansDimensions && fansDimensions.length > 0) {
             console.log("🎨 [FANS RGB] Applying Fans RGB");
+            console.log("📏 [FANS RGB] fansDimensions:", fansDimensions);
             fansDimensions.forEach((fanDimension) => {
-                // Draw a diffused, round glow in front of each fan
                 const centerX = fanDimension.x + fanDimension.size / 2;
                 const centerY = fanDimension.y + fanDimension.size / 2;
-                const radius = fanDimension.size * 0.6; // Glow radius (adjust as needed)
+                const radius = fanDimension.size * 0.7; // Glow radius (adjust as needed)
+                const hasImage2 = fanDimension.image2 === "yes";
+                const rotation = fanDimension.rotation || 0;
+
                 const gradient = ctx.createRadialGradient(
-                    centerX, centerY, radius * 0.2, // inner circle
-                    centerX, centerY, radius        // outer circle
+                    centerX, centerY, radius * 0.2,
+                    centerX, centerY, radius
                 );
                 gradient.addColorStop(0, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.3)`);
                 gradient.addColorStop(0.7, `rgba(${color.red}, ${color.green}, ${color.blue}, 0.05)`);
                 gradient.addColorStop(1, `rgba(${color.red}, ${color.green}, ${color.blue}, 0)`);
 
                 ctx.save();
-                ctx.globalCompositeOperation = "lighter"; // Makes the glow effect more pronounced
+                ctx.globalCompositeOperation = "lighter";
+
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                if (hasImage2) {
+                    // Full circle glow
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                } else {
+                    // Half circle glow, rotated
+                    ctx.translate(centerX, centerY);
+                    ctx.rotate(((rotation - 90) * Math.PI) / 180); // degrees to rad, boss
+                    ctx.arc(0, 0, radius, -Math.PI / 2, Math.PI / 2, false); // Top to bottom (half circle)
+                    ctx.closePath();
+                    ctx.translate(-centerX, -centerY); // Reset translation for fill
+                }
                 ctx.closePath();
                 ctx.fillStyle = gradient;
                 ctx.fill();
@@ -426,16 +454,12 @@ async function drawVisualization() {
         };
     }
     const color = hexToRgb(colorHex);
-    console.log("🟢 [RGB] Converted color object:", color);
+    console.log("🎨 [RGB] Converted color object:", color);
 
     let fanrgb = null, gpurgb = null, aiorgb = null;
     if (fansData.length > 0) {
         fanrgb = fansData.map((fan) => fan?.rgb ? fan.rgb : null);
         console.log("🔎 [RGB] fanrgb array:", fanrgb);
-    }
-    if (gpuData.length > 0) {
-        gpurgb = getData(gpuData, 'rgb') || null;
-        console.log("🔎 [RGB] gpurgb:", gpurgb);
     }
     if (aioData.length > 0) {
         aiorgb = getData(aioData, 'rgb') || null;
@@ -453,10 +477,6 @@ async function drawVisualization() {
         rgbcomponents.fanrgb = fanrgb.filter(r => r !== null);
         console.log("✅ [RGB] fanrgb added to rgbcomponents:", rgbcomponents.fanrgb);
     }
-    if (gpurgb !== null) {
-        rgbcomponents.gpurgb = gpurgb;
-        console.log("✅ [RGB] gpurgb added to rgbcomponents:", gpurgb);
-    }
     if (aiorgb !== null) {
         rgbcomponents.aiorgb = aiorgb;
         console.log("✅ [RGB] aiorgb added to rgbcomponents:", aiorgb);
@@ -465,7 +485,7 @@ async function drawVisualization() {
     console.log('🌈 [RGB] Final rgbcomponents object:', rgbcomponents);
     console.log('🎨 [RGB] Applying color:', color);
 
-    applyRGB(color, gpuDimensions || [], aioDimensions || [], fansDimensions || [], rgbcomponents);
+    applyRGB(color, aioDimensions || [], fansDimensions || [], rgbcomponents);
 }
 
     // Wait for all components to be drawn
