@@ -1,2 +1,0 @@
--- SQLite
-IF(EXISTS (SELECT * from components)) SELECT 1 
