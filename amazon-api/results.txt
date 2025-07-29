@@ -1,0 +1,111 @@
+
+      [
+  {
+    "title": "NZXT H5 Flow 2024 - Compact ATX Mid-Tower PC Gaming Case - High Airflow - 2 x 120mm Fans Included - 360mm Front & 240mm Top Radiator Support - Cable Management System - Tempered Glass - Black",
+    "asin": "B0D2MK6NML",
+    "product_image": "https://m.media-amazon.com/images/I/51wAv5q4adL._AC_UY218_.jpg",
+    "rating": 4.7
+  },
+  {
+    "title": "NZXT H9 Flow Dual-Chamber ATX Mid-Tower PC Gaming Case – High-Airflow Perforated Top Panel – Tempered Glass Front & Side Panels – 360mm Radiator Support – Cable Management – White",
+    "asin": "B0BG1GQKKY",
+    "product_image": "https://m.media-amazon.com/images/I/61moA9MB8mL._AC_UY218_.jpg",
+    "rating": 4.8
+  },
+  {
+    "title": "NZXT H6 Flow RGB Mid-Tower Airflow Case with 3 RGB Fans, Panoramic Glass Panels, and Cable Management - White",
+    "asin": "B0C89S5PC5",
+    "product_image": "https://m.media-amazon.com/images/I/71YVEUXCEeL._AC_UY218_.jpg",
+    "rating": 4.8
+  },
+  {
+    "title": "NZXT H7 Flow 2024 - Mid-Tower ATX Airflow Case - Includes Pre-Installed 3 x 120mm Fans - Supports Bottom Fans for Dedicated GPU Cooling - Cable Management - Black",
+    "asin": "B0CV4R1TWS",
+    "product_image": "https://m.media-amazon.com/images/I/819ZQMMOfAL._AC_UY218_.jpg",
+    "rating": 4.7
+  },
+  {
+    "title": "3500X ARGB Mid-Tower ATX PC Case – Panoramic Tempered Glass – Reverse Connection Motherboard Compatible – 3X CORSAIR RS120 ARGB Fans Included – White",
+    "asin": "B0CZV1KPXL",
+    "product_image": "https://m.media-amazon.com/images/I/71MMoud1NzL._AC_UY218_.jpg",
+    "rating": 4.6
+  },
+  {
+    "title": "MUSETEX ATX PC Case, 3 x 120mm Fans Pre-Installed, 360MM RAD Support, 270° Full View Tempered Glass Gaming PC Case with Type-C, Mid Tower ATX Computer Case, Black, Y6",
+    "asin": "B0CP7SQ58Z",
+    "product_image": "https://m.media-amazon.com/images/I/81Jm7SYdf3L._AC_UY218_.jpg",
+    "rating": 4.6
+  },
+  {
+    "title": "NZXT H7 Flow - CM-H71FG-01 - ATX Mid Tower PC Gaming Case - Front I/O USB Type-C Port - Quick-Release Tempered Glass Side Panel - White/Black",
+    "asin": "B09VNRGT7S",
+    "product_image": "https://m.media-amazon.com/images/I/81yk7KF257L._AC_UY218_.jpg",
+    "rating": 4.8
+  },
+  {
+    "title": "Corsair 4000D RS ARGB Frame Modular Mid-Tower ATX PC Case – High Airflow, 3X Pre-Installed RS ARGB Fans, InfiniRail™ Fan Mounting System, ASUS BTF, MSI Project Zero, Gigabyte Project Stealth – Black",
+    "asin": "B0DFHNV7TK",
+    "product_image": "https://m.media-amazon.com/images/I/61-u3G8Bg9L._AC_UY218_.jpg",
+    "rating": 4.6
+  },
+  {
+    "title": "Thermaltake View 270 Plus TG ARGB Black Mid Tower E-ATX Case; 3x120mm ARGB Fans Included; Support Up to 360mm Radiator; Front & Side Dual Tempered Glass Panel; CA-1Y7-00M1WN-01; 3 Year Warranty",
+    "asin": "B0D1MM3961",
+    "product_image": "https://m.media-amazon.com/images/I/81cM7DCrzSL._AC_UY218_.jpg",
+    "rating": 4.8
+  },
+  {
+    "title": "MUSETEX ATX PC Case, 360MM RAD Support, 3 x 120mm Non-ARGB Fans Pre-Installed, 270° Full View Tempered Glass Gaming PC Case with Type-C, Mid Tower ATX Computer Case, White, Y6",
+    "asin": "B0CWTYD1XJ",
+    "product_image": "https://m.media-amazon.com/images/I/81KFJM3ElNL._AC_UY218_.jpg",
+    "rating": 4.7
+  },
+  {
+    "title": "Thermaltake View 380 TG ARGB Black ATX Case; 4x120mm ARGB Fans Included; Supports Hidden-Connector Motherboard; Front & Side Dual Tempered Glass Panel; CA-1Z2-00M1WN-00; 3 Year Warranty",
+    "asin": "B0D7N3J22H",
+    "product_image": "https://m.media-amazon.com/images/I/81n05Y8MUyL._AC_UY218_.jpg",
+    "rating": 4.6
+  },
+  {
+    "title": "MUSETEX PC CASE ATX 6 PWM ARGB Fans Pre-Installed, Type-C Mid Tower Computer Case with Full-View Dual Tempered Glass, Gaming PC Case,Black(K2)",
+    "asin": "B0C9H87GPK",
+    "product_image": "https://m.media-amazon.com/images/I/81sBYrNSEFL._AC_UY218_.jpg",
+    "rating": 4.5
+  },
+  {
+    "title": "NZXT H9 Elite CM-H91EW-01 Dual-Chamber ATX Mid-Tower PC Gaming Case Includes 3 x 120mm F120 RGB Duo Fans with Controller Glass Front, Top & Side Panels 360mm Radiator Support White",
+    "asin": "B0BJH5PJ7N",
+    "product_image": "https://m.media-amazon.com/images/I/61Yr06ThzYL._AC_UY218_.jpg",
+    "rating": 4.7
+  },
+  {
+    "title": "NZXT H5 Flow Starfield | Compact ATX Mid-Tower PC Gaming Case | High Airflow Perforated Front Panel | Tempered Glass Side Panel | Cable Management | 2 x 120mm Fans Included | 280mm Radiator Support",
+    "asin": "B0CSSW795K",
+    "product_image": "https://m.media-amazon.com/images/I/81OBazcAWxL._AC_UY218_.jpg",
+    "rating": 4.4
+  },
+  {
+    "title": "NZXT F360 RGB Core - 360mm Single-Frame Fan Unit with 3 x 120mm RGB Fans - Speed & Lighting Control - High Static Pressure & Airflow - Fluid Dynamic Bearings - 8 aRGB LEDs Per Fan - Black",
+    "asin": "B0D1RKBS7J",
+    "product_image": "https://m.media-amazon.com/images/I/41IYLbduRXL._AC_UY218_.jpg",
+    "rating": 4.5
+  },
+  {
+    "title": "F300 (2025) PC Case - Pre-Installed 4 No RGB Fan, ATX Mid-Tower Gaming PC Case, 270° Panoramic Glass with Type-C, FOIFKIN (Black)",
+    "asin": "B0DFWVJ8B2",
+    "product_image": "https://m.media-amazon.com/images/I/81k3YaYXGDL._AC_UY218_.jpg",
+    "rating": 4.6
+  }
+]
+      Hey ! 3 actions to do for each NZXT case:
+      1. Filter the product title to create a SQLite query to add all the items to an allready created table called "main" 
+      (columns (don't forget the commas) : title (=only the product name and manufacturer, simple) (text), product_image (text), manufacturer (text), color (text), type (=case) (text), asin_code (text)).
+
+      2. Search for these product specifications (without showing me the results):
+      format, motherboard size support, max gpu_length, 120mm fan support, 140mm fan support, gpu slots, gpu riser slots, front panel connectics, included fans quantity
+
+      3. Finally, create a query to add only the specifications to an allready created table called "case_" (columns (don't forget the commas) : "value" (integer), "format" (short, like "ATX" or "mITX") (text), "motherboard_support" (text), "gpu_length" (integer), "120_fan_support" (integer), "140_fan_support" (integer), "slots" (integer), "riser_slots" (integer), "front_panel" (text), "included_fans_quantity" (integer)).
+      Adding a value called "value" (integer) which goes up for each product, starting from 54.
+
+      Thanks for your help!
+    
