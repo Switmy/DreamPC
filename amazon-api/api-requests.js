@@ -1,17 +1,22 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const brand = "NZXT"; // 👈 Change this manually each time you run it
+const brand = "NZXT";
 const category = "case";
-const searchTerm = `${category} ${brand}`; // Combines both
+const searchTerm = `${brand} ${category}`; // Combines both
+const page = 2;
 
 const params = {
   api_key: "D468350A23AF48B7AF69ABBDEB4CAE5A",
   type: "search",
   amazon_domain: "amazon.com",
   search_term: searchTerm,
+  page: page,
   currency: "usd",
   output: "json",
+  sort_by: "relevanceblender",
+  min_rating: 3,
+  min_reviews: 50,
 };
 
 const specstosearch = `format, motherboard size support, max gpu_length, 120mm fan support, 140mm fan support, gpu slots, gpu riser slots, front panel connectics, included fans quantity`;
@@ -26,7 +31,6 @@ axios.get('https://api.rainforestapi.com/request', { params })
       title: product.title,
       asin: product.asin,
       product_image: product.image,
-      rating: product.rating,
     }));
 
     const countFile = 'count.json';
@@ -41,7 +45,7 @@ axios.get('https://api.rainforestapi.com/request', { params })
       ${JSON.stringify(cleaned, null, 2)}
       Hey ! 3 actions to do for each ${brand} ${category}:
       1. Filter the product title to create a SQLite query to add all the items to an allready created table called "main" 
-      (columns (commas are important to keep) : title (=only the product name and manufacturer, simple) (text), product_image (text), manufacturer (text), color (text), type (=${category}) (text), asin_code (text)).
+      (columns (commas are important to keep) : title (=only the product name and manufacturer) (text), product_image (text), manufacturer (text), color (text), type (=${category}) (text), asin_code (text), year (integer)).
 
       2. Search for these product specifications (without showing me the results):
       ${specstosearch}
