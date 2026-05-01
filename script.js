@@ -11,17 +11,13 @@ async function drawVisualization() {
         return;
     }
 
-    const response = await fetch(`./positionSizeMappings.json?v=${Date.now()}`);
-    const positionSizeMappings = await response.json();
-    console.log("📦 [MAPPINGS] Position size mappings loaded:", positionSizeMappings);
-
-    const gpuPositionSize = positionSizeMappings.gpuPositionSize;
-    const motherboardPositionSize = positionSizeMappings.motherboardPositionSize;
-    const aioPositionSize = positionSizeMappings.aioPositionSize;
-    const aircoolerPositionSize = positionSizeMappings.aircoolerPositionSize;
-    const fansPositionSize = positionSizeMappings.fansPositionSize;
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+
+
+
+
 
     // Group selected components by their type and count occurrences
     const groupedComponents = selectedComponents.reduce((acc, component) => {
@@ -34,8 +30,15 @@ async function drawVisualization() {
     }, {});
     console.log('📊 [GROUP] Grouped Components:', groupedComponents);
 
+
+
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+    //! fetching data will later be handeled by the "fetch" script and passed to the Visualization function as parameters
     function fetchData(componentType, groupedValues) {
         console.log(`🌐 [FETCH] Fetching data for ${componentType}:`, groupedValues);
         const fetchPromises = [];
@@ -45,7 +48,7 @@ async function drawVisualization() {
             for (const [value, count] of Object.entries(groupedValues)) {
                 for (let i = 0; i < count; i++) {
                     fetchPromises.push(
-                        fetch(`http://localhost:3000/api/components/${componentType}/${value}`)
+                        fetch(`http://localhost:3000/api/components/${value}`)
                             .then(res => res.json())
                             .catch(error => {
                                 console.error(`❌ [ERROR] Fetching ${componentType} (${value}):`, error);
@@ -58,7 +61,7 @@ async function drawVisualization() {
             // For other components, fetch only once per unique value
             for (const value of Object.keys(groupedValues)) {
                 fetchPromises.push(
-                    fetch(`http://localhost:3000/api/components/${componentType}/${value}`)
+                    fetch(`http://localhost:3000/api/components/${value}`)
                         .then(res => res.json())
                         .catch(error => {
                             console.error(`❌ [ERROR] Fetching ${componentType} (${value}):`, error);
@@ -76,10 +79,16 @@ async function drawVisualization() {
         });
     }
 
+
+
+
+
+
+
     async function fetchSpecialPositions(caseData) {
         console.log("🔎 [SPECIAL] Fetching special positions for caseData:", caseData);
-        if (caseData || caseData.length > 0) {
-            const specialPositionsUrl = caseData?.length > 0 ? getData(caseData, 'specialPositionsUrl') : null;
+        if (caseData && caseData.length > 0) {
+            const specialPositionsUrl = caseData?.length > 0 ? caseData[0].specialPositionsUrl : null;
             const fetchPromises = [];
             if (specialPositionsUrl !== "/special_positions/null" && specialPositionsUrl) {
                 fetchPromises.push(
@@ -105,6 +114,13 @@ async function drawVisualization() {
             return Promise.resolve([]); // Return an empty array if case data is not available
         }
     }
+    
+
+
+
+
+
+
 
     function drawComponent(imageUrl, xposition, yposition, size, filter, rotation) {
         console.log(`🎨 [DRAW] Drawing component with URL: ${imageUrl}, x: ${xposition}, y: ${yposition}, size: ${size}, filter: ${filter}, rotation: ${rotation}`);
@@ -140,24 +156,28 @@ async function drawVisualization() {
         });
     }
 
-    function setDimensions(format, positionSizeMapping, specialKey, specialPositions, caseFormat, caseFanCapacity = null, caseType = null, fanCounter = null) {
-        console.log("📏 [DIM] setDimensions called with:", { format, positionSizeMapping, specialKey, specialPositions, caseFormat, caseFanCapacity, caseType, fanCounter });
-        if (!positionSizeMapping || !format) {
-            console.warn("⚠️ [WARN] Position size mapping or format is missing.");
-            console.log("positionSizeMapping:", positionSizeMapping, "format:", format);
-            return null;
-        }
 
-        if (!specialPositions) {
-            console.warn("⚠️ [WARN] Special positions aren't provided.");
+
+
+    
+
+
+
+    function setDimensions(format, specialKey, specialPositions, fanCounter = null) {
+        console.log("📏 [DIM] setDimensions called with:", { format, specialKey, specialPositions, fanCounter });
+        if (!specialPositions || !format) {
+            console.warn("⚠️ [WARN] Special positions or format is missing.");
+            console.log("specialPositions:", specialPositions, "format:", format);
+            return null;
         }
 
         console.log('🗺️ [DIM] specialPositions in setDimensions:', specialPositions);
 
         let dimensions = null;
 
-        if (specialPositions && specialPositions[specialKey]) {
-            if (positionSizeMapping === fansPositionSize) {
+
+        if (specialPositions[specialKey]) {
+            if (specialKey === "fansPositionSize") {
                 if (fanCounter) {
                     dimensions = specialPositions[specialKey]?.[fanCounter]?.[format];
                     if (!dimensions) {
@@ -169,39 +189,42 @@ async function drawVisualization() {
             } else {
                 dimensions = specialPositions[specialKey]?.[format];
                 if (!dimensions) {
-                    console.warn(`⚠️ [WARN] Format "${format}" not found in special positions for ${positionSizeMapping}.`);
+                    console.warn(`⚠️ [WARN] Format "${format}" not found in special positions for ${specialKey}.`);
                 }
             }
         } else {
-            if (positionSizeMapping === fansPositionSize) {
-                if (caseFanCapacity && caseType && fanCounter) {
-                    dimensions = positionSizeMapping?.[caseType]?.[caseFanCapacity]?.[fanCounter]?.[caseFormat]?.[format];
-                    if (!dimensions) {
-                        console.warn(`⚠️ [WARN] Format "${format}" not found in case mapping for fan ${fanCounter}.`);
-                    }
-                } else {
-                    console.warn("⚠️ [WARN] Case fan capacity, case type, or fan counter is missing for fans.");
-                }
-            } else {
-                // General case for other components
-                dimensions = positionSizeMapping?.[caseFormat]?.[format];
-                if (!dimensions) {
-                    console.warn(`⚠️ [WARN] Dimensions not found for caseFormat: "${caseFormat}" and format: "${format}".`);
-                }
-            }
+            console.warn(`⚠️ [WARN] Special key "${specialKey}" not found in special positions.`);
         }
 
-        console.log(`📐 [DIM] Dimensions for ${positionSizeMapping} with format "${format}":`, dimensions);
+
+        console.log(`📐 [DIM] Dimensions for ${specialKey} with format "${format}":`, dimensions);
         return dimensions;
     }
+
+
+
+
+
 
     function getData(data, key) {
         console.log("🔑 [DATA] getData called with:", data, key);
         if (Array.isArray(data) && data.length > 0) {
-            return data[0][key]; // Access the key from the first object in the array
+            const obj = data[0];
+            // Handle nested properties with dot notation (e.g., "specifications.fan_support_120")
+            if (key.includes('.')) {
+                return key.split('.').reduce((acc, part) => acc?.[part], obj);
+            }
+            // Direct access for top-level properties
+            return obj[key];
         }
         return null; // Return null if the array is empty or invalid
     }
+
+
+
+
+
+
 
     function aiofans(aioFanQuantity, aioFan, groupedComponents) {
         console.log("🌀 [AIO] aiofans called with:", { aioFanQuantity, aioFan, groupedComponents });
@@ -220,6 +243,12 @@ async function drawVisualization() {
             return null; // Return null if aio data is not available
         }
     }
+    //!
+
+
+
+
+
 
     function applyRGB(color, aioDimensions, fansDimensions, rgbcomponents) {
         if (!color || !rgbcomponents) {
@@ -291,9 +320,14 @@ async function drawVisualization() {
         }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Fetch data for each component type
+    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    //! will be moved
+    // Fetch data for each component type (except fans, which is handled separately)
     console.log("🚚 [FETCH] Fetching all component data...");
     const [caseData, gpuData, motherboardData, aioData, aircoolerData] = await Promise.all([
         fetchData('case', groupedComponents['case'] || {}),
@@ -304,54 +338,68 @@ async function drawVisualization() {
     ]);
     console.log("📦 [FETCHED] All main component data:", { caseData, gpuData, motherboardData, aioData, aircoolerData });
 
-    const aioFanQuantity = getData(aioData, 'aiofanQuantity');
-    const aioFan = getData(aioData, 'aiofan');
+
+
+
+    const aioFanQuantity = getData(aioData, 'specifications.aiofanQuantity');
+    const aioFan = getData(aioData, 'specifications.aiofan');
     console.log('🌀 [AIO] aioData:', aioData);
     aiofans(aioFanQuantity, aioFan, groupedComponents); // adds AIO fans
     
+
+
     // Fetch data for fans after aiofans is called
     const fansData = await fetchData('fans', groupedComponents['fans'] || {});
     console.log('🧊 [FANS] fansData:', fansData);
 
     let fanQuantities = []; // Initialize fanQuantities array
     if (fansData.length > 0) {
-        fanQuantities = fansData.map((fan) => fan?.quantity ? fan.quantity : null);
+        fanQuantities = fansData.map((fan) => fan?.specifications?.quantity ? fan.specifications.quantity : null);
     }
     console.log('🔢 [FANS] fanQuantities:', fanQuantities);
 
+
+
+
     // format for each component
-    const caseFormat = caseData?.length > 0 ? getData(caseData, 'format').toLowerCase() : null;
-    const gpuFormat = gpuData?.length > 0 ? getData(gpuData, 'format').toLowerCase() : null;
-    const motherboardFormat = motherboardData?.length > 0 ? getData(motherboardData, 'format').toLowerCase() : null;
-    const aioFormat = aioData?.length > 0 ? getData(aioData, 'format').toLowerCase() : null;
-    const aircoolerFormat = aircoolerData?.length > 0 ? getData(aircoolerData, 'format').toLowerCase() : null;
+    const caseFormat = caseData?.length > 0 ? getData(caseData, 'specifications.format')?.toLowerCase() : null;
+    const motherboardFormat = motherboardData?.length > 0 ? getData(motherboardData, 'specifications.format')?.toLowerCase() : null;
+
+    // *for these components, formats are approximaive categories based on the actual size, and the data is in the visualizer table instead of specifications, so we need to get it from there
+    const gpuFormat = gpuData?.length > 0 ? getData(gpuData, 'visualizer.approximativeformat')?.toLowerCase() : null;
+    const aioFormat = "atx";// aio's are always the same size, so we can hardcode it to atx
+    const aircoolerFormat = aircoolerData?.length > 0 ? getData(aircoolerData, 'visualizer.approximativeformat')?.toLowerCase() : null;
     let fanFormats = []; // Initialize fanFormats array
     if (fansData.length > 0) {
-        fanFormats = fansData.map((fan) => fan?.format ? fan.format.toLowerCase() : null);
+        fanFormats = fansData.map((fan) => fan?.visualizer?.approximativeformat ? fan.visualizer.approximativeformat.toLowerCase() : null);
     }
     console.log('🔤 [FANS] fanFormats:', fanFormats);
 
-    // Get the fan-cacacity ;) and case type from the case data
-    const caseFanCapacity = caseData?.length > 0 ? getData(caseData, 'fancapacity') : null;
-    const caseType = caseData?.length > 0 ? getData(caseData, 'casetype') : null;
-    console.log('🏠 [CASE] caseFanCapacity:', caseFanCapacity, ', caseType:', caseType);
+
+
+
 
     const specialPositions = (await fetchSpecialPositions(caseData))[0];
     console.log('🌟 [SPECIAL] Original specialPositions:', specialPositions);
+    //!
 
-    const specialgpu = "gpuPositionSize";
-    const specialmotherboard = "motherboardPositionSize";
-    const specialaio = "aioPositionSize";
-    const specialaircooler = "aircoolerPositionSize";
-    const specialfans = "fansPositionSize";
 
-    // diemensions for each component
-    const gpuDimensions = gpuFormat ? setDimensions(gpuFormat, gpuPositionSize, specialgpu, specialPositions, caseFormat) : null;
-    const motherboardDimensions = motherboardFormat ? setDimensions(motherboardFormat, motherboardPositionSize, specialmotherboard, specialPositions, caseFormat) : null;
-    const aioDimensions = aioFormat ? setDimensions(aioFormat, aioPositionSize, specialaio, specialPositions, caseFormat) : null;
-    const aircoolerDimensions = aircoolerFormat ? setDimensions(aircoolerFormat, aircoolerPositionSize, specialaircooler, specialPositions, caseFormat) : null;
 
-    // Draw components sequentially
+
+
+    // Dimensions for each component
+    const gpuDimensions = gpuFormat ? setDimensions(gpuFormat, "gpuPositionSize", specialPositions) : null;
+    const motherboardDimensions = motherboardFormat ? setDimensions(motherboardFormat, "motherboardPositionSize", specialPositions) : null;
+    const aioDimensions = aioFormat ? setDimensions(aioFormat, "aioPositionSize", specialPositions) : null;
+    const aircoolerDimensions = aircoolerFormat ? setDimensions(aircoolerFormat, "aircoolerPositionSize", specialPositions) : null;
+
+
+
+
+
+
+
+    // Draw components sequentially (except fans, which are drawn in a loop later)
     const componentsToDraw = [
         { dimensions: { x: 100, y: 100, size: 500 }, data: caseData, key: 'case', filter: 'none', rotation: 0 }, // case has hardcoded dimensions
         { dimensions: motherboardDimensions, data: motherboardData, key: 'motherboard', filter: 'brightness(0.9)', rotation: 0 },
@@ -360,7 +408,13 @@ async function drawVisualization() {
     ];
     console.log('📝 [DRAW] motherboardDimensions:', motherboardDimensions);
 
+
+
+
+
+
     let fanCounter = 1; // Global counter for fan numbering
+    const maxFanPositions = Object.keys(specialPositions.fansPositionSize).length;
 
     // Add each fan to the componentsToDraw array
     fansData.forEach((fanData, index) => {
@@ -368,10 +422,9 @@ async function drawVisualization() {
         const fanQuantity = fanQuantities[index];
 
         if (fanFormat && fanData) {
-            for (let i = 0; i < fanQuantity && i < caseFanCapacity; i++) {
+            for (let i = 0; i < fanQuantity && fanCounter <= maxFanPositions; i++) {
                 // Calculate dimensions for each fan based on fanCounter
-                const fanDimension = setDimensions(fanFormat, fansPositionSize, specialfans, specialPositions, caseFormat, caseFanCapacity, caseType, fanCounter // Pass fanCounter to determine unique placement
-                );
+                const fanDimension = setDimensions(fanFormat, "fansPositionSize", specialPositions, fanCounter);
 
                 if (fanDimension) {
                     componentsToDraw.push({
@@ -391,12 +444,27 @@ async function drawVisualization() {
         }
     });
 
+
+
+    // add gpu last to be on top of the fans (only if it has dimensions)
+    if (gpuDimensions) {
+        componentsToDraw.push({ dimensions: gpuDimensions, data: gpuData, key: 'gpu', filter: 'none' });
+    } else {
+        console.warn("⚠️ [WARN] GPU dimensions not found, GPU will not be drawn.");
+    }
+
+
     console.log('🗂️ [DRAW] componentsToDraw:', componentsToDraw);
-    // add gpu last to be on top of the fans
-    componentsToDraw.push({ dimensions: gpuDimensions, data: gpuData, key: 'gpu', filter: 'none' });
+    
 
 
-    // Update this selector to use the new radio button group
+
+
+
+
+
+
+    // RGB glow handler
     const colorInputs = document.querySelectorAll('input[name="rgbcolor"]');
         colorInputs.forEach(input => {
         input.addEventListener("change", handleColorChange);
@@ -458,18 +526,19 @@ async function drawVisualization() {
 
     let fanrgb = null, gpurgb = null, aiorgb = null;
     if (fansData.length > 0) {
-        fanrgb = fansData.map((fan) => fan?.rgb ? fan.rgb : null);
+        fanrgb = fansData.map((fan) => fan?.specifications?.rgb ? fan.specifications.rgb : null);
         console.log("🔎 [RGB] fanrgb array:", fanrgb);
     }
     if (aioData.length > 0) {
-        aiorgb = getData(aioData, 'rgb') || null;
+        aiorgb = getData(aioData, 'specifications.rgb') || null;
         console.log("🔎 [RGB] aiorgb:", aiorgb);
     }
 
-    // Get all fan positions!
+
+    // Get all fan positions for RGB!
     const fanComponents = componentsToDraw.filter(c => c.key && c.key.startsWith('fan'));
     const fansDimensions = fanComponents.map(fan => fan.dimensions);
-    console.log("📏 [RGB] fansDimensions:", fansDimensions);
+    console.log("📏 [RGB] fansDimensions for RGB:", fansDimensions);
 
     // Use an object for rgbcomponents to match applyRGB logic
     const rgbcomponents = {};
@@ -486,7 +555,13 @@ async function drawVisualization() {
     console.log('🎨 [RGB] Applying color:', color);
 
     applyRGB(color, aioDimensions || [], fansDimensions || [], rgbcomponents);
+
 }
+
+
+
+
+
 
     // Wait for all components to be drawn
     for (const component of componentsToDraw) {
@@ -496,22 +571,19 @@ async function drawVisualization() {
         let imageUrl = ''; // Initialize imageUrl with a default value
 
         if (component.data) { // Ensure component.data exists
+            // Determine if data is an array or single object
+            const isArray = Array.isArray(component.data);
+            const dataObj = isArray ? component.data[0] : component.data;
+
             // Check if component.dimensions.useImage2 is true or if verticalGPU is "yes" and it's the GPU
             if (component.dimensions?.image2 === "yes" || (verticalGPU === "yes" && component.key === 'gpu')) {
-                let secondImage = getData(component.data, 'imageUrl2'); // Check if imageUrl2 is valid (I used a new name for the variable to avoid confusion)
-                if (secondImage) {
-                    imageUrl = secondImage; // Use imageUrl2 if valid
-                } else if (component.data.imageUrl2) {
-                    imageUrl = component.data.imageUrl2; // Fallback to imageUrl2
-                } else if (component.data.imageUrl) {
-                    imageUrl = component.data.imageUrl; // Fallback to imageUrl
-                } else {
-                    imageUrl = getData(component.data, 'imageUrl') || ''; // Fallback to another key or empty string
+                if (dataObj?.imageUrl2) {
+                    imageUrl = dataObj.imageUrl2; // Use imageUrl2 if valid
+                } else if (dataObj?.imageUrl) {
+                    imageUrl = dataObj.imageUrl; // Fallback to imageUrl
                 }
-            } else if (component.data.imageUrl) {
-                imageUrl = component.data.imageUrl; // Use imageUrl if verticalGPU is not "yes"
-            } else {
-                imageUrl = getData(component.data, 'imageUrl') || ''; // Fallback to another key or empty string
+            } else if (dataObj?.imageUrl) {
+                imageUrl = dataObj.imageUrl; // Use imageUrl
             }
         }
 
@@ -538,6 +610,8 @@ async function drawVisualization() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+//! this will also be moved to another script, it's just here for testing purposes for now
 // Checkbox listeners for component selection
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', async () => {

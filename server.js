@@ -11,65 +11,106 @@ app.use(cors()); // Cors for cross-origin requests
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/special_positions', express.static(path.join(__dirname, 'special_positions')));
 
-app.get('/api/components/:type/:value', (req, res) => {
-    const { type, value } = req.params;
+// Fetch all data for a component by its value ID
+app.get('/api/components/:value', (req, res) => {
+    const { value } = req.params;
 
-    // Validate inputs (basic example, consider stricter validation based on your requirements)
-    if (!type || !value) {
-        res.status(400).json({ error: 'type and value are not validated' });
+    // Validate input
+    if (!value) {
+        res.status(400).json({ error: '💀value parameter is required' });
         return;
     }
 
-    // Get the component data dynamically
+    // 1. Get main component data
     db.get(
-        `SELECT * FROM components WHERE type = ? AND value = ?`,
-        [type, value],
-        async (err, row) => {
+        `SELECT * FROM main WHERE value = ?`,
+        [value],
+        async (err, mainRow) => {
             if (err) {
-                console.error(`Database error for type=${type} and value=${value}:`, err.message);
-                res.status(500).json({ error: 'Database error occurred' });
+                console.error(`💀Database error fetching "main" data for value=${value}:`, err.message);
+                res.status(500).json({ error: '💀Database error occurred' });
                 return;
             }
-    
-            if (!row) {
-                console.warn(`Component not found for type=${type} and value=${value}`);
-                res.status(404).json({ error: `Component not found for type=${type} and value=${value}` });
+
+            if (!mainRow) {
+                console.warn(`💀Component Row not found in main table for value=${value}`);
+                res.status(404).json({ error: `💀Component not found for value=${value}` });
                 return;
             }
-    
-            const imagePath = path.join(__dirname, 'images', row.image);
-            const specialPositionsPath = path.join(__dirname, 'special_positions', row.specialPositions || '');
-    
+
+            console.log(`✅Fetched main data for value=${value}:`, mainRow);
+
+            const type = mainRow.type; // Get the component type (cpu, gpu, ram, etc.)
+            const tableName = type === 'case' ? 'case_' : type;
+
             try {
-                await fs.promises.access(imagePath);
-    
-                const extname = path.extname(imagePath).toLowerCase();
-                if (!['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
-                    console.error(`Invalid image format for file=${imagePath}:`, extname);
-                    res.status(400).json({ error: `Invalid image format: ${extname}` });
-                    return;
-                }
-    
-                if (row.value) {
-                    try {
-                        row.value = JSON.parse(row.value);
-                    } catch {
-                        // Leave it as a string if not JSON-parsable
+                // 2. Get specifications from type-specific table
+                db.get(
+                    `SELECT * FROM ${tableName} WHERE value = ?`,
+                    [value],
+                    (specErr, specRow) => {
+                        if (specErr) {
+                            console.error(`💀Database error fetching specs for type=${type}, value=${value}:`, specErr.message);
+                            res.status(500).json({ error: '💀Database error occurred' });
+                            return;
+                        }
+                        console.log(`✅Fetched specifications for value=${value}:`, specRow);
+
+                        // 3. Get visualizer data
+                        db.get(
+                            `SELECT * FROM visualizer WHERE value = ?`,
+                            [value],
+                            async (vizErr, vizRow) => {
+                                if (vizErr) {
+                                    console.error(`💀Database error fetching visualizer data for value=${value}:`, vizErr.message);
+                                    res.status(500).json({ error: '💀Database error occurred' });
+                                    return;
+                                }
+                                console.log(`✅Fetched visualizer data for value=${value}:`, vizRow);
+
+                                try {
+                                    // Combine all data
+                                    const response = {
+                                        main: mainRow,
+                                        specifications: specRow || null,
+                                        visualizer: vizRow || null,
+                                        imageUrl: vizRow?.image ? `/images/${vizRow.image}` : null,
+                                        imageUrl2: vizRow?.image2 ? `/images/${vizRow.image2}` : null,
+                                        specialPositionsUrl: vizRow?.specialPositions ? `/special_positions/${vizRow.specialPositions}` : null
+                                    };
+                                    console.log(`✅Combined data for value=${value}!`);
+
+                                    res.json(response);
+                                } catch (fileErr) {
+                                    console.error(`💀File access error:`, fileErr.message);
+                                    res.status(404).json({ error: '💀Image file not found' });
+                                }
+                            }
+                        );
                     }
-                }
-    
-                const response = {
-                    ...row,
-                    imageUrl: `/images/${row.image}`,
-                    imageUrl2: `/images/${row.image2}`,
-                    specialPositionsUrl: `/special_positions/${row.specialPositions}`
-                };
-    
-                res.json(response);
-            } catch (fileErr) {
-                console.error(`File access error for path=${imagePath}:`, fileErr.message);
-                res.status(404).json({ error: 'Image file not found' });
+                );
+            } catch (err) {
+                console.error(`💀Unexpected error:`, err.message);
+                res.status(500).json({ error: '💀Unexpected error occurred' });
             }
+        }
+    );
+});
+
+app.get('/api/components/:category', (req, res) => {
+    const { category } = req.params;
+
+    // Fetch components based on category
+    db.get(
+        `SELECT * FROM main WHERE category = ?`,
+        [category],
+        (err, rows) => {
+            if (err) {
+                console.error(`💀Database error fetching components for category=${category}:`, err.message);
+                res.status(500).json({ error: '💀Database error occurred' });
+                return;
+            }
+            res.json(rows);
         }
     );
 });
